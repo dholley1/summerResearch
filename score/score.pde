@@ -35,7 +35,7 @@ void draw() {
   //}
   //save("3.jpg");
   //test();
-  
+  percentage();
 }
 
 float test(String filename) {
@@ -92,4 +92,10 @@ void percentage() {
   float one = test("1.jpg");
   float two = test("2.jpg");
   float three = test("3.jpg");
+  
+  println("1: ", one);
+  println("2: ", two);
+  println("3: ", three);
+  
+  
 }
