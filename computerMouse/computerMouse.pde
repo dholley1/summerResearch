@@ -1,9 +1,18 @@
 //0:mouseX, 1:mouseY, 2:dx, 3:dy, 4:targetX, 5:targetY
-float[] vals = {0, 0, 4, 2, 40, 40};
+//float[] vals = {0, 0, 4, 2, 40, 40};
 boolean done = false;
 boolean move = false;
-boolean moved = false;
 boolean pressed = false;
+
+color c;
+
+float[] xbristles = new float[400];
+float[] ybristles = new float[400];
+float brushVelocity = 0;
+float brushRange = 10;
+
+float xpos = 0;
+float ypos = 0;
 
 PImage input;
 
@@ -32,27 +41,40 @@ void advance(float[] vals, int sizeX, int sizeY) {
   }
 }
 
-color c;
+window[] pApps = new window[3];
 
 void setup(){
-  size(500, 500);
   background(255);
+  //blendMode(MULTIPLY);
   input = loadImage("flower.jpg");
-  image(input, 0, 0, input.width / 5, input.height / 3);
+  image(input, 0, 0, 300, 300);
+  
+  String[] args = {"PaintWindow"};
+  for(int i = 0; i < 3; i++) {
+    float deltaX = random(10, 100);
+    float[] vals = {0, 0, random(.1, 20), random(.1, 20), deltaX, deltaX};
+    window win = new window(i < 5 ? 300 * i : 300 * i - 1500,
+                            i < 5 ? 0 : 300, 
+                            vals, this, i);
+    pApps[i] = win;
+    PApplet.runSketch(args, win);
+  }
   
 }
-
-float[] xbristles = new float[400];
-float[] ybristles = new float[400];
-float brushVelocity = 0;
-float brushRange = 10;
-
-float xpos = 0;
-float ypos = 0;
+PImage im;
+void settings() {
+  size(300, 300);
+}
 
 void draw() {
-  if(!done) {
-    advance(vals, 500, 500);
+  //if (pApps[0].done) {
+    //pApps[0].save("fjasldkfj.jpg");
+    //im = loadImage("example.jpg");
+    //image(im, 0, 100, 300, 300);
+  }
+  /*if(!done) {
+    surface.setLocation(600, 600);
+    advance(vals, 300, 300);
     c = get((int)vals[0], (int)vals[1]);
     stroke(c);
     //transparency *= .99;
@@ -67,24 +89,4 @@ void draw() {
       if(brushRange > 20)
       brushRange = 20;
     }*/
-    if(pressed) {
-      for(int i = 0; i < 400; i++) {
-        xpos = random(vals[0] - brushRange, vals[0] + brushRange);
-        ypos = random(vals[1] - brushRange, vals[1] + brushRange);
-        point(xpos, ypos);
-        xbristles[i] = xpos;
-        ybristles[i] = ypos;
-        pressed = false;
-      }
-    }
-    else {
-      for(int i = 0; i < 400; i++) {
-        xpos = random(vals[0] - brushRange, vals[0] + brushRange);
-        ypos = random(vals[1] - brushRange, vals[1] + brushRange);
-        line(xbristles[i], ybristles[i], vals[0], vals[1]);
-        xbristles[i] = xpos;
-        ybristles[i] = ypos;
-      }
-    }
-  }
 }

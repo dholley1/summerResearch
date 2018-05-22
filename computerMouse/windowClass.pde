@@ -1,3 +1,9 @@
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStreamReader;
+
 public class window extends PApplet {
   //main canvas
   PApplet picture;
@@ -7,10 +13,13 @@ public class window extends PApplet {
   public int x;
   public int y;
   
+  
+  int num;
+  
   //bools for picking up and putting down brush
   boolean pressed = false;
   boolean move = false;
-  boolean done = false;
+  public boolean done = false;
   
   //indivitual bristle points
   float[] xbristles = new float[400];
@@ -25,7 +34,7 @@ public class window extends PApplet {
   float transparency = 100;
   
   //constructor
-  window(int xval, int yval, float[] v, PApplet p) {
+  window(int xval, int yval, float[] v, PApplet p, int n) {
     x = xval;
     y = yval;
     vals[0] = v[0];
@@ -36,6 +45,7 @@ public class window extends PApplet {
     vals[5] = v[5];
     picture = p;
     c = picture.get((int)vals[0], (int)vals[1]);
+    num = n;
   }
   
   public void settings() {
@@ -79,6 +89,19 @@ public class window extends PApplet {
           ybristles[i] = ypos;
         }
       }
+    }
+    else {
+      /*print("saved");
+      PrintWriter writer = new PrintWriter("data.txt", "UTF-8");
+      writer.println("hi");
+      writer.close();*/
+      //File file = new File("data.txt");
+      //BufferedWriter out = new BufferedWriter(new FileWriter(file));
+      //out.write("hi");
+      //out.close();
+      
+      save("../SR/summerResearch/computerMouse/data/example.jpg");
+      noLoop();
     }
   }
   
