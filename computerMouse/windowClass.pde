@@ -1,18 +1,19 @@
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStreamReader;
+//import java.io.BufferedWriter;
+//import java.io.FileWriter;
+//import java.io.File;
+//import java.io.FileInputStream;
+//import java.io.InputStreamReader;
 
 public class window extends PApplet {
   //main canvas
   PApplet picture;
   //0:mouseX, 1:mouseY, 2:dx, 3:dy, 4:targetX, 5:targetY
-  float[] vals = {0, 0, 0, 0, 0, 0};
+  public float[] vals = {0, 0, 0, 0, 0, 0};
   //x and y value of window position
   public int x;
   public int y;
   
+  boolean reset = false;
   
   int num;
   
@@ -33,16 +34,12 @@ public class window extends PApplet {
   color c;
   float transparency = 100;
   
+  
   //constructor
   window(int xval, int yval, float[] v, PApplet p, int n) {
     x = xval;
     y = yval;
-    vals[0] = v[0];
-    vals[1] = v[1];
-    vals[2] = v[2];
-    vals[3] = v[3];
-    vals[4] = v[4];
-    vals[5] = v[5];
+    vals = v;
     picture = p;
     c = picture.get((int)vals[0], (int)vals[1]);
     num = n;
@@ -55,9 +52,9 @@ public class window extends PApplet {
   public void draw() {
     if(!done) {
       surface.setLocation(x, y);
-      
+      transparency *= .95;
       stroke(c);
-      this.advance(vals, 300, 300);
+      advance(vals, 300, 300);
       if(brushVelocity >= 9)
         brushRange *= .9;
       else {
@@ -67,6 +64,8 @@ public class window extends PApplet {
       }
       if(pressed) {
         c = picture.get((int)vals[0], (int)vals[1]);
+        transparency = 100;
+        c = color(red(c), green(c), blue(c), transparency);
         brushRange = 10;
         for(int i = 0; i < 200; i++) {
           float rand = random(0, 2*PI);
@@ -90,17 +89,8 @@ public class window extends PApplet {
         }
       }
     }
-    else {
-      /*print("saved");
-      PrintWriter writer = new PrintWriter("data.txt", "UTF-8");
-      writer.println("hi");
-      writer.close();*/
-      //File file = new File("data.txt");
-      //BufferedWriter out = new BufferedWriter(new FileWriter(file));
-      //out.write("hi");
-      //out.close();
-      
-      save("../SR/summerResearch/computerMouse/data/example.jpg");
+    else {      
+      //save("../SR/summerResearch/computerMouse/data/example.jpg");
       noLoop();
     }
   }
@@ -129,4 +119,18 @@ public class window extends PApplet {
         move = true;
     }
   }
+  
+  window crossover(int xval, int yval, window partner, int n) {
+    float[] newGenes = new float[6];
+    for(int i = 0; i < 6; i++) {
+      float choice = random(1);
+      if (choice < .5)
+        newGenes[i] = this.vals[i];
+      else
+        newGenes[i] = partner.vals[i];
+    }
+    window child = new window(xval, yval, newGenes, picture, n);
+    return child;
+  }
+  
 }
