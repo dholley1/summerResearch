@@ -2,7 +2,7 @@ int imgwidth = 300;
 int imgheight = 300;
 boolean done = false;
 
-float[] scores = new float[WINDOWS];
+float[] scores = new float[POPULATION];
 //scores[0] = test("0.jpg");
 //scores[1] = test("1.jpg");
 //scores[2] = test("2.jpg");
@@ -57,7 +57,7 @@ float test(String filename) {
 
 
 float[] percentage() {
-  int number = WINDOWS; // later change to ten
+  int number = POPULATION; // later change to ten
   
   float[] scoreChart = new float[number];
   float[] perChart = new float[number];
@@ -122,7 +122,7 @@ int compare(float[] range, float randNum) {
 
 int[] selection() {
 
-  int number = WINDOWS; // later change to ten
+  int number = POPULATION; // later change to ten
 
   // this is just to print percent
   float[] percent = percentage();
