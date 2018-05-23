@@ -1,111 +1,79 @@
-PImage input;
+int imgwidth = 300;
+int imgheight = 300;
 
-int imgwidth;
-int imgheight;
-boolean done = false;
-
-void setup() {
-  //size(648, 864);
-  size(648, 432);
-  input = loadImage("input.jpg");
-  imgwidth = input.width;
-  imgheight = input.height;
-  image(input, 0, 0, imgwidth, imgheight);
-}
-
-void draw() {
-  noLoop();
-  noStroke();
-  selection();
-}
-
-
+// Take a filename of a painting to test how different it is from the
+// original and return the score in float type
 float test(String filename) {
-  // take the original and the result and test the fitness of the result
-
-  //Color range: 0 to 255
   
-  //5: -15 ~ +15 very good (81 ~ 100)
-  //4: -30 ~ +30 good (61 ~ 80)
-  //3: -45 ~ +45 okay (41 ~ 60)
-  //2: -60 ~ +60 bad (21 ~ 40)
-  //1: Beyond is very bad (1 ~ 20)
-  
-  //1. go through the whole panel
-  //2. get red, green, blue
-  //3. take the difference and average them 
-
+  // Load a resultant painting
   PImage result = loadImage(filename);
-  //image(result, 0, 432, result.width, result.height);
-  //image(input, 0, 0, imgwidth, imgheight);
-  
-  // load pixels!
+
+  // Load the original picture and the resultant painting into arrays
   input.loadPixels();
   result.loadPixels();
   
-  // the size of the pixel array
+  // Get the size of the picture (count the number of pixels)
   int arySize = imgwidth * imgheight;
-  //print("pixel size: ", arySize, "\n");
-  
-  // total sum
+
+  // Variable for the total sum of the difference of rgb
   float total_sum = 0;
   
+  // Go through the pixels to calculate the total difference
   for (int i = 0; i < arySize; i++) {
-    // get the difference of colors and take an abs
+    
+    // Calculate the difference in color between the pixel in the picture
+    // and the painting
     float r = abs(red(input.pixels[i]) - red(result.pixels[i]));
     float g = abs(green(input.pixels[i]) - green(result.pixels[i]));
     float b = abs(blue(input.pixels[i]) - blue(result.pixels[i]));
     
-    // take an avg and add to the total sum
+    // Add the average of the difference of the selected pixel
     total_sum += (r + g + b) / 3;
   }
   
-  //println("total sum: ", total_sum);
-  //println("sum avg: ", total_sum / arySize);
-  
+  // The score the selected painting is the average of the difference in
+  // color among all pixels
   float score = total_sum / arySize;
   return score;
 }
 
 
+//
 float[] percentage() {
-  int number = 4; // later change to ten
   
-  String[] filename = {"1.jpg", "2.jpg", "3.jpg", "4.jpg"};
-  
-  float[] scoreChart = new float[number];
-  float[] perChart = new float[number];
+  // Create arrays to save scores and percentages for each painting
+  float[] scoreChart = new float[POPULATION];
+  float[] perChart = new float[POPULATION];
 
+  // Variables to calculate total scores and total percentage
   float totalScore = 0;
   float totalPer = 0;
   
-  for (int n=0; n<number; n++) {
-    String tester = "\"" + char(n + 49) + ".jpg\"";
-    scoreChart[n] = test(filename[n]);
+  // Call the test function on each painting to get its score
+  for (int n=0; n<POPULATION; n++) {
+    String painting = Integer.toString(n + GEN * 3) + ".jpg";
+    scoreChart[n] = test(painting);
     totalScore += scoreChart[n];
-    //println("score of", n, "th painting:", scoreChart[n]);
   }
   
-  //float[] dumbT = new float[number];
-
-  //for (int n=0; n<number; n++) {  
-  //  dumbT[n] = scoreChart[n] / totalScore;
-  //}
-  
-  for (int n=0; n<number; n++) {  
+  // Rearrange the scores in the proper order
+  for (int n = 0; n < POPULATION; n++) {  
+    // Subtract a score from the total score to arrange scores in proper order
+    // Higher number represents a better painting
     scoreChart[n] = totalScore - scoreChart[n];
     totalPer += scoreChart[n];
-    //println("reversed score of", n, "th painting:", scoreChart[n]);
   }
   
-  for (int n=0; n<number; n++) {  
+  // Calculate the percentage of the scores
+  for (int n = 0; n < POPULATION; n++) {  
     perChart[n] = scoreChart[n] / totalPer * 100;
-    //println("percent of", n, "th painting:", perChart[n], "%");
   }
   
   return perChart;
 }
 
+// Compare a given random number with the range to find what range does
+// the given random number represent
 int compare(float[] range, float randNum) {
   if (randNum<range[0]) {
     return 0;
@@ -140,19 +108,17 @@ int compare(float[] range, float randNum) {
   return 1000;
 }
 
+// Select two parents using other methods
 int[] selection() {
 
-  int number = 4; // later change to ten
-
-  // this is just to print percent
+  // Run percentage to store the percentages of fitness of paintings
   float[] percent = percentage();
-  for (int n=0; n<number; n++) {
-    println("percent", n, ":", percent[n]);
-  }
 
-  // make an ary of range
-  float[] range = new float[number];
-  for (int n=0; n<number; n++) {
+  // Variable to calculate the range
+  float[] range = new float[POPULATION];
+  
+  // Calculate the range
+  for (int n=0; n<POPULATION; n++) {
     if (n==0) {
       range[n] = percent[n];
     }
@@ -160,37 +126,32 @@ int[] selection() {
       range[n] = range[n-1] + percent[n];
     }
   }
-  for (int n=0; n<number; n++) {
-    println("range", n, ":", range[n]);
-  }
-  
-  // get two random number
+
+  // Select two random numbers
   float r1 = random(100);
   float r2 = random(100);
+  
+  // Reselect the second random number if the two random numbers are the same
   if (r1 == r2) {
     while (r1 != r2) {
       r2 = random(100);
     }
   }
-  println("r1:", r1, "r2:", r2);
 
+  // Array to save parents
   int[] parents = new int[2];
-
-  // get the first parent
+ 
+  // Run the compare funtion on both random numbers
   parents[0] = compare(range, r1);
-
-  // get the second parent
   parents[1] = compare(range, r2);
 
+  // Run the compare function again if two parents are the same
   if (parents[0] == parents[1]) {
     while (parents[0] == parents[1]) {
       r2 = random(100);
-      println("in loop");
-      println("r1:", r1, "r2:", r2);
       parents[1] = compare(range, r2);
     }
   }
 
-  println("parents:", parents[0], ",", parents[1]);
   return parents;
 }
