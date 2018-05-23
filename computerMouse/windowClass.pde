@@ -7,13 +7,15 @@
 public class window extends PApplet {
   //main canvas
   PApplet picture;
-  //0:mouseX, 1:mouseY, 2:dx, 3:dy, 4:targetX, 5:targetY
+  //0:mouseX, 1:mouseY, 2:dx, 3:dy, 4:brushLength, 5:brushTarget
   public float[] vals = {0, 0, 0, 0, 0, 0};
   //x and y value of window position
   public int x;
   public int y;
   
+  boolean start = true;
   boolean reset = false;
+  boolean restart = false;
   
   int num;
   
@@ -27,6 +29,7 @@ public class window extends PApplet {
   float[] ybristles = new float[400];
   float brushVelocity = 0;
   float brushRange = random(1, 20);
+  float brush = brushRange;
 
   float xpos = 0;
   float ypos = 0;
@@ -50,6 +53,7 @@ public class window extends PApplet {
   }
   
   public void draw() {
+    if(start) {background(255); start = false;}
     if(!done) {
       surface.setLocation(x, y);
       transparency *= .95;
@@ -66,7 +70,7 @@ public class window extends PApplet {
         c = picture.get((int)vals[0], (int)vals[1]);
         transparency = 100;
         c = color(red(c), green(c), blue(c), transparency);
-        brushRange = 10;
+        brushRange = brush;
         for(int i = 0; i < 200; i++) {
           float rand = random(0, 2*PI);
           xpos = cos(rand) * brushRange + vals[0];
@@ -89,9 +93,17 @@ public class window extends PApplet {
         }
       }
     }
-    else {      
+    if(reset){      
       //save("../SR/summerResearch/computerMouse/data/example.jpg");
-      noLoop();
+      background(255);
+      xpos = 0;
+      ypos = 0;
+      reset = false;
+      START = true;
+    }
+    if(restart) {
+      restart = false;
+      done = false;
     }
   }
   
@@ -120,7 +132,7 @@ public class window extends PApplet {
     }
   }
   
-  window crossover(int xval, int yval, window partner, int n) {
+  float[] crossover(window partner) {
     float[] newGenes = new float[6];
     for(int i = 0; i < 6; i++) {
       float choice = random(1);
@@ -129,8 +141,10 @@ public class window extends PApplet {
       else
         newGenes[i] = partner.vals[i];
     }
-    window child = new window(xval, yval, newGenes, picture, n);
-    return child;
+    newGenes[0] = 0;
+    newGenes[1] = 0;
+    newGenes[4] = newGenes[5];
+    return newGenes;
   }
   
 }

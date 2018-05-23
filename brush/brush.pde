@@ -22,10 +22,10 @@ void draw() {
   //stroke(c);
   brushVelocity = sqrt(pow(mouseX - xpos, 2) + 
                        pow(mouseY - ypos, 2));
-  if(brushVelocity >= 5);
-    //brushRange *= .9;
+  if(brushVelocity >= 5)
+    brushRange *= .9;
   else {
-    //brushRange *= 1.01;
+    brushRange *= 1.01;
     if(brushRange > 20)
       brushRange = 20;
   }

@@ -4,6 +4,8 @@ window[] pApps = new window[3];
 
 float[][] genes = new float[10][6];
 
+static boolean START = false;
+
 void setup(){
   //blendMode(MULTIPLY);
   input = loadImage("flower.jpg");
@@ -28,7 +30,8 @@ void settings() {
 }
 
 void draw() {
-  int count = 0;
+  if(START) {for(int i = 0; i < 3; i++) pApps[i].restart = true; START = false;}
+  else {int count = 0;
   for(int i = 0; i < 3; i++) {
     if(pApps[i].done)
       count+=1;
@@ -37,13 +40,14 @@ void draw() {
   }
   if(count == 3) {
     for(int i = 0; i < 3; i++) {
-      window parent = choseParent(pApps);
-      window partner = chosePartner(pApps, parent);
-      child = parent.crossover(i < 5 ? 300 * i : 300 * i - 1500,
-                               i < 5 ? 0 : 300,
-                               partner, i);
-      PApplet.runSketch(args, child);
+      pApps[i].reset = true;
+      //window parent = choseParent(pApps);
+      //window partner = chosePartner(pApps, parent);
+      float[] newGenes = pApps[0].crossover(pApps[1]);
+      pApps[i].vals = newGenes;
+      pApps[i].pressed = true;
     }
   }
   count = 0;
+  }
 }
