@@ -7,17 +7,18 @@
 public class window extends PApplet {
   //main canvas
   PApplet picture;
-  //0:mouseX, 1:mouseY, 2:dx, 3:dy, 4:brushLength, 5:brushTarget
-  public float[] vals = {0, 0, 0, 0, 0, 0};
+  //0:mouseX, 1:mouseY, 2:dx, 3:dy, 4:brushLength, 5:brushTarget 6:brushThickness
+  public float[] vals = {0, 0, 0, 0, 0, 0, 0};
   //x and y value of window position
   public int x;
   public int y;
+  
+  boolean saved = false;
   
   boolean start = true;
   boolean reset = false;
   boolean restart = false;
   
-  int num;
   
   //bools for picking up and putting down brush
   boolean pressed = false;
@@ -28,8 +29,8 @@ public class window extends PApplet {
   float[] xbristles = new float[400];
   float[] ybristles = new float[400];
   float brushVelocity = 0;
-  float brushRange = random(1, 20);
-  float brush = brushRange;
+  float brushRange;
+  float brushThickness;
 
   float xpos = 0;
   float ypos = 0;
@@ -39,13 +40,14 @@ public class window extends PApplet {
   
   
   //constructor
-  window(int xval, int yval, float[] v, PApplet p, int n) {
+  window(int xval, int yval, float[] v, PApplet p) {
     x = xval;
     y = yval;
     vals = v;
+    brushRange = vals[6];
+    brushThickness = vals[6];
     picture = p;
     c = picture.get((int)vals[0], (int)vals[1]);
-    num = n;
   }
   
   public void settings() {
@@ -70,7 +72,7 @@ public class window extends PApplet {
         c = picture.get((int)vals[0], (int)vals[1]);
         transparency = 100;
         c = color(red(c), green(c), blue(c), transparency);
-        brushRange = brush;
+        brushRange = brushThickness;
         for(int i = 0; i < 200; i++) {
           float rand = random(0, 2*PI);
           xpos = cos(rand) * brushRange + vals[0];
@@ -93,6 +95,11 @@ public class window extends PApplet {
         }
       }
     }
+    /*else if (!saved){
+      save("../SR/summerResearch/computerMouse/data/"+Integer.toString(PAINTING)+".jpg");
+      PAINTING++;
+      saved = true;
+    }*/
     if(reset){      
       //save("../SR/summerResearch/computerMouse/data/example.jpg");
       background(255);
@@ -104,6 +111,7 @@ public class window extends PApplet {
     if(restart) {
       restart = false;
       done = false;
+      saved = false;
     }
   }
   
@@ -133,8 +141,8 @@ public class window extends PApplet {
   }
   
   float[] crossover(window partner) {
-    float[] newGenes = new float[6];
-    for(int i = 0; i < 6; i++) {
+    float[] newGenes = new float[7];
+    for(int i = 0; i < 7; i++) {
       float choice = random(1);
       if (choice < .5)
         newGenes[i] = this.vals[i];
