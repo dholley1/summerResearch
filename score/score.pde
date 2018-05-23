@@ -11,32 +11,33 @@ void setup() {
   input = loadImage("input.jpg");
   imgwidth = input.width;
   imgheight = input.height;
-  println("w:", imgwidth, " h:", imgheight);
+  //println("w:", imgwidth, " h:", imgheight);
   //size(imgwidth, imgheight);
   image(input, 0, 0, imgwidth, imgheight);
-  println("1");
 }
 
 void draw() {
   noLoop();
   noStroke();
-  //for (int x=0; x<imgwidth; x+=10) {
-  //  for (int y=0; y<imgheight; y+=10) {
+  //for (int x=0; x<imgwidth; x+=20) {
+  //  for (int y=0; y<imgheight; y+=20) {
   //    if (done) return;
   //    color c = input.get(x, y);
   //    fill(c);
   //    stroke(c);  
-  //    rect(x+5, y+5, 10, 10);
+  //    rect(x+5, y+5, 20, 20);
   //    //line(x, y, x+10, y+10);
   //    if (x>(imgwidth) && y>(imgheight)) {
   //      done = true;
   //    }
   //  }
   //}
-  //save("3.jpg");
-  //test();
-  percentage();
+  //save("4.jpg");
+  //test("4.jpg");
+  //percentage();
+  selection();
 }
+
 
 float test(String filename) {
   // take the original and the result and test the fitness of the result
@@ -63,7 +64,7 @@ float test(String filename) {
   
   // the size of the pixel array
   int arySize = imgwidth * imgheight;
-  print("pixel size: ", arySize, "\n");
+  //print("pixel size: ", arySize, "\n");
   
   // total sum
   float total_sum = 0;
@@ -78,24 +79,90 @@ float test(String filename) {
     total_sum += (r + g + b) / 3;
   }
   
-  println("total sum: ", total_sum);
-  println("sum avg: ", total_sum / arySize);
+  //println("total sum: ", total_sum);
+  //println("sum avg: ", total_sum / arySize);
   
   float score = total_sum / arySize;
   return score;
 }
 
-void percentage() {
-  // run test for all resulting paintings-- need to figure out how to pass PImage as a parameter
+
+float[] percentage() {
+  int number = 4; // later change to ten
   
-  // use three examples to write this =)
-  float one = test("1.jpg");
-  float two = test("2.jpg");
-  float three = test("3.jpg");
+  String[] filename = {"1.jpg", "2.jpg", "3.jpg", "4.jpg"};
   
-  println("1: ", one);
-  println("2: ", two);
-  println("3: ", three);
+  float[] scoreChart = new float[number];
+  float[] perChart = new float[number];
+
+  float totalScore = 0;
+  float totalPer = 0;
   
+  for (int n=0; n<number; n++) {
+    String tester = "\"" + char(n + 49) + ".jpg\"";
+    scoreChart[n] = test(filename[n]);
+    totalScore += scoreChart[n];
+    println("score of", n, "th painting:", scoreChart[n]);
+  }
   
+  //float[] dumbT = new float[number];
+
+  //for (int n=0; n<number; n++) {  
+  //  dumbT[n] = scoreChart[n] / totalScore;
+  //}
+  
+  for (int n=0; n<number; n++) {  
+    scoreChart[n] = totalScore - scoreChart[n];
+    totalPer += scoreChart[n];
+    println("reversed score of", n, "th painting:", scoreChart[n]);
+  }
+  
+  for (int n=0; n<number; n++) {  
+    perChart[n] = scoreChart[n] / totalPer * 100;
+    println("percent of", n, "th painting:", perChart[n], "%");
+  }
+  
+  return perChart;
+}
+
+
+String[] selection() {
+  float[] percent = percentage();
+  
+  float r1 = random(100);
+  float r2 = random(100);
+  if (r1 == r2) {
+    while (r1 != r2) {
+      r2 = random(100);
+    }
+  }
+  
+  String[] selected = {r1, r2};
+  
+  for (int i=0; i<2; i++) {
+    if (0<=r1 && r1<percent[1]) {
+    }
+    else if (percent[1]<=r1 && r1<percent[2]) {
+    }
+    else if (percent[2]<=r1 && r1<percent[3]) {
+    }
+    else if (percent[3]<=r1 && r1<percent[4]) {
+    }
+    else if (percent[4]<=r1 && r1<percent[5]) {
+    }
+    else if (percent[5]<=r1 && r1<percent[6]) {
+    }
+    else if (percent[6]<=r1 && r1<percent[7]) {
+    }
+    else if (percent[7]<=r1 && r1<percent[8]) {
+    }
+    else if (percent[8]<=r1 && r1<percent[9]) {
+    }
+    else if (percent[9]<=r1 && r1<100) {
+    }
+  }
+  
+  // the second
+  
+  println(total);
 }
