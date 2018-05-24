@@ -1,7 +1,3 @@
-//PImage INPUT;
-int WIDTH = 300;
-int HEIGHT = 300;
-
 float pixel_color(String filename) {
   PImage result = loadImage(filename);
   INPUT.loadPixels();
@@ -68,7 +64,7 @@ float[] percentage() {
   // Call the test function on each painting to get its score
   for (int n=0; n<POPULATION; n++) {
     String painting = Integer.toString(n + GEN * 3) + ".jpg";
-    scoreChart[n] = test(painting);
+    scoreChart[n] = score_one(painting);
     totalScore += scoreChart[n];
   }
   
