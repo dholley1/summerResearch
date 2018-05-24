@@ -1,14 +1,7 @@
 int POPULATION = 10;
-//<<<<<<< HEAD
-
 int WIDTH = 200;
 int HEIGHT = 200;
-
-PImage target;
-
-//=======
 boolean START = false;
-//>>>>>>> 6aa448e74fd424a7dfbdbfbbc293d47595e73429
 ArrayList<Canvas> allCanvases = new ArrayList<Canvas>();
 PImage input;
 static int PAINTING = 0;
@@ -19,16 +12,11 @@ void setup() {
   size(1005, 603);
   background(50);
   rectMode(CENTER);
-//<<<<<<< HEAD
-  target = loadImage("flower.jpg");
-  image(target, 0, 402, 200, 200);
-//=======
   input = loadImage("flower.jpg");
   image(input, 0, 0, 200, 200);
-//>>>>>>> 6aa448e74fd424a7dfbdbfbbc293d47595e73429
   for(int i = 0; i < POPULATION; i++) {
-    float deltaX = random(10, 100);
-    float[] vs = {0, 0, random(5, 20), random(5, 20), deltaX, deltaX, random(5, 20)};
+    float deltaX = random(10, 40);
+    float[] vs = {0, 0, random(5, 10), random(5, 10), deltaX, deltaX, random(5, 20)};
     allCanvases.add(new Canvas(100 + (i < 5 ? 201 * i : 201 * (i - 5)), 
                                301 + (i < 5 ? 0 : 201), 200, color(255), vs));
   }
@@ -78,6 +66,8 @@ void draw() {
       for(int i = 0; i < POPULATION; i++) {
         allCanvases.get(i).vals = genes[i];
         allCanvases.get(i).pressed = true;
+        allCanvases.get(i).brushRange = genes[i][6];
+        allCanvases.get(i).brushThickness = genes[i][6];
       }
     }
     
