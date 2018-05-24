@@ -35,31 +35,24 @@ class Canvas {
   float xpos = 0;
   float ypos = 0;
   
-  //offset for each canvas
-  float offX = 0;
-  float offY = 0;
-  
   //color values for the paint
   color c;
   float transparency = 100;
-  
   
   Canvas(float x, float y, int s, color c, float[] v) {
     xCenter = x;
     yCenter = y;
     sideLength = s;
     fillColor = c;
-    offX = x - s / 2;
-    offY = y - s / 2;
     vals = v;
     brushRange = vals[6];
     brushThickness = vals[6];
+    body = createGraphics(sideLength, sideLength);
   }
 
   void display() {
     /* Draws the Canvas to the main window. */
     
-    body = createGraphics(sideLength, sideLength);
     
     body.beginDraw();
       // Not doing anything interesting graphically yet:
@@ -95,6 +88,8 @@ class Canvas {
         brushRange *= .9;
       else {
         brushRange *= 1.1;
+        if(brushRange > 20)
+          brushRange = 20;
       }
       
       //in case the brush was picked up
@@ -139,13 +134,10 @@ class Canvas {
         }
       }
     }
-    
     //after painting is done and saved, reset to all white
     if(reset){
-      //body.background(255);
-      //body.rect();
-      xpos = offX;
-      ypos = offY;
+      xpos = 0;
+      ypos = 0;
       reset = false;
       START = true;
     }
@@ -199,5 +191,9 @@ class Canvas {
     newGenes[1] = 0;
     newGenes[4] = newGenes[5];
     return newGenes;
+  }
+  
+  void saveImage(String name) {
+    this.body.save(name);
   }
 }
