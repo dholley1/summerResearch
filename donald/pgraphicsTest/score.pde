@@ -64,7 +64,7 @@ float[] percentage() {
     String painting = Integer.toString(n + GEN * 3) + ".png";
     scoreChart[n] = test(painting);
     totalScore += scoreChart[n];
-    println("score of", n, "th painting:", scoreChart[n]);
+    //println("score of", n, "th painting:", scoreChart[n]);
   }
   
   for (int n=0; n<number; n++) {  
@@ -166,6 +166,6 @@ int[] selection() {
     }
   }
 
-  println("parents:", parents[0], ",", parents[1]);
+  //println("parents:", parents[0], ",", parents[1]);
   return parents;
 }

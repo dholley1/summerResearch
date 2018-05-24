@@ -84,7 +84,7 @@ class Canvas {
       advance(200, 200);
       
       //increase or decrease radius of brush depending on speed
-      if(brushVelocity >= 9)
+      if(brushVelocity >= 5)
         brushRange *= .9;
       else {
         brushRange *= 1.1;
@@ -183,7 +183,7 @@ class Canvas {
       //random parent for each gene
       float choice = random(1);
       if (choice < .5)
-        newGenes[i] = this.vals[i];
+        newGenes[i] = vals[i];
       else
         newGenes[i] = partner.vals[i];
     }
@@ -194,6 +194,6 @@ class Canvas {
   }
   
   void saveImage(String name) {
-    this.body.save(name);
+    body.save(name);
   }
 }
