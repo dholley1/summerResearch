@@ -11,7 +11,7 @@ float[][] genes = new float[POPULATION][7];
 
 //START is true when the windows are ready to start
 //painting
-static boolean START = false;
+boolean START = false;
 
 //PAINTING keeps track of the number of painting that have been
 //done and GEN keeps track of the number of generations there have been
@@ -49,9 +49,9 @@ void draw() {
   
   //in case of new paintings
   if(START) {
-  for(int i = 0; i < POPULATION; i++) 
-    pApps[i].restart = true; 
-  START = false;
+    for(int i = 0; i < POPULATION; i++) 
+      pApps[i].restart = true; 
+    START = false;
   }
   
   //while painting are being done
