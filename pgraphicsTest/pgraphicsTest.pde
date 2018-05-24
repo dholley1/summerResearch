@@ -64,7 +64,7 @@ void draw() {
     if(count == POPULATION) {
       for(Canvas c: allCanvases) {
         //saves images so they can be compared to original image
-        c.body.save("data/"+Integer.toString(PAINTING)+".jpg");
+        c.saveImage("data/"+Integer.toString(PAINTING)+".png");
         PAINTING++;
       }
       
