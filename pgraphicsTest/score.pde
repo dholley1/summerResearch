@@ -3,10 +3,6 @@ int imgheight = 200;
 boolean done = false;
 
 float[] scores = new float[POPULATION];
-//scores[0] = test("0.jpg");
-//scores[1] = test("1.jpg");
-//scores[2] = test("2.jpg");
-
 
 float test(String filename) {
   // take the original and the result and test the fitness of the result
@@ -66,10 +62,10 @@ float[] percentage() {
   float totalPer = 0;
   
   for (int n=0; n<number; n++) {
-    String painting = Integer.toString(n + GEN * 3) + ".jpg";
+    String painting = Integer.toString(n + GEN * 3) + ".png";
     scoreChart[n] = test(painting);
     totalScore += scoreChart[n];
-    //println("score of", n, "th painting:", scoreChart[n]);
+    println("score of", n, "th painting:", scoreChart[n]);
   }
   
   for (int n=0; n<number; n++) {  
@@ -171,6 +167,6 @@ int[] selection() {
     }
   }
 
-  //println("parents:", parents[0], ",", parents[1]);
+  println("parents:", parents[0], ",", parents[1]);
   return parents;
 }
