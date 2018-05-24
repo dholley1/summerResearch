@@ -3,13 +3,18 @@
 */
 int POPULATION = 10;
 
+int WIDTH = 200;
+int HEIGHT = 200;
+
+PImage target;
+
 ArrayList<Canvas> allCanvases = new ArrayList<Canvas>();
 
 void setup() {
   size(1005, 603);
   background(50);
   rectMode(CENTER);
-  PImage target = loadImage("flower.jpg");
+  target = loadImage("flower.jpg");
   image(target, 0, 402, 200, 200);
   for(int i = 0; i < POPULATION; i++) {
     allCanvases.add(new Canvas(100 + (i < 5 ? 201 * i : 201 * (i - 5)), 
