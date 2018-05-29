@@ -42,6 +42,8 @@ class Canvas {
   float origDeltaXVelocity;
   float origXPos;
   float origYPos;
+  float lastXPos;
+  float lastYPos;
   float origDeltaXPos;
   float origDeltaYPos;
   float origBrushPressure;
@@ -131,6 +133,7 @@ class Canvas {
     
     // Add the Canvas to the window; the math is for centering correctly,
     // as an image uses the upper left corner as the origin:
+    //if(done)
     image(body, xCenter - sideLength/2, yCenter - sideLength/2);
     
   }
@@ -158,9 +161,12 @@ class Canvas {
       //in case the brush was picked up
       if(pressed) {
         
+        lastXPos = xPos;
+        lastYPos = yPos;
+        
         //get new location color
         //c = picture.get((int)vals[0], (int)vals[1]);
-        c = get((int)vals[0], (int)vals[1]);
+        c = get((int)xPos, (int)yPos);
         
         //reset transparency
         transparency = 100;
@@ -172,8 +178,8 @@ class Canvas {
         //pick random points for each bristle
         for(bristle b: bristles) {
           float angle = random(0, 2*PI);
-          b.press(vals[0] + cos(angle) * random(0, brushRange),
-                  vals[1] + sin(angle) * random(0, brushRange));
+          b.press(xPos + cos(angle) * random(0, brushRange),
+                  yPos + sin(angle) * random(0, brushRange));
           
           pressed = false;
         }
@@ -186,17 +192,18 @@ class Canvas {
         
         //drag each bristle to new random location
         for(bristle b: bristles) {
-          float dx = vals[0] - xpos;
-          float dy = vals[1] - ypos;
+          float dx = xPos - xpos;
+          float dy = yPos - ypos;
           b.drag(dx, dy, xpos, ypos);
 
         }
       }
-      xpos = vals[0];
-      ypos = vals[1];
+      xpos = xPos;
+      ypos = xPos;
       //advaces the brush by dx and dy, or puts the brush at a new location
       //upLeft();
-      downRight();
+      //downRight();
+      advance();
     }
     //after painting is done and saved, reset to all white
     if(reset){
@@ -268,8 +275,10 @@ class Canvas {
 
   void advance() {
     if(move) {
-      xPos = origXPos;
-      yPos = origYPos;
+      println(deltaXPos);
+      //println(xPos);
+      xPos = lastXPos;
+      yPos = lastYPos;
  
       xPos += deltaXPos;
       yPos += deltaYPos;
@@ -285,6 +294,10 @@ class Canvas {
       brushPressure = origBrushPressure;
       deltaBrushPressure = origDeltaBrushPressure;
       
+      currentLength = 0;
+      move = false;
+      pressed = true;
+      
     }
     else {
       xPos += xVelocity;
@@ -295,8 +308,11 @@ class Canvas {
       deltaYVelocity += variationYVelocity;
       brushPressure += deltaBrushPressure;
       deltaBrushPressure += variationBrushPressure;
+      currentLength += sqrt(pow(xPos - xpos, 2) + pow(yPos - ypos, 2));
+      if (currentLength >= brushLength) {
+        move = true;
+      }
     }
-    
   }
   
   //method for reproducing traits
