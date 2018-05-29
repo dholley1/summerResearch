@@ -17,9 +17,8 @@ void setup() {
 }
 
 void draw() {
-  transparency *= .999;
+  transparency *= .99;
   c = color(100, 200,  50, transparency);
-  print(red(c));
   stroke(c);
   brushVelocity = sqrt(pow(mouseX - xpos, 2) + 
                        pow(mouseY - ypos, 2));
@@ -32,10 +31,10 @@ void draw() {
   }
   if(pressed && active) {
     //executes when the mouse is already pressed
-    for(int i = 0; i < 400; i++) {
+    for(int i = 0; i < 100; i++) {
       float angle = random(0, 2*PI);
-      xpos = cos(angle) * brushRange + mouseX;//random(mouseX - brushRange, mouseX + brushRange);
-      ypos = sin(angle) * brushRange + mouseY;//random(mouseY - brushRange, mouseY + brushRange);
+      xpos = cos(angle) * brushRange + mouseX;
+      ypos = sin(angle) * brushRange + mouseY;
       line(xbristles[i], ybristles[i], xpos, ypos);
       xbristles[i] = xpos;
       ybristles[i] = ypos;
@@ -43,10 +42,10 @@ void draw() {
   }
   else if(pressed) {
     //executes if the mouse has just been pressed
-    for(int i = 0; i < 400; i++) {
+    for(int i = 0; i < 100; i++) {
       float angle = random(0, 2*PI);
-      xpos = cos(angle) * brushRange + mouseX;//random(mouseX - brushRange, mouseX + brushRange);
-      ypos = sin(angle) * brushRange + mouseY;//random(mouseY - brushRange, mouseY + brushRange);
+      xpos = cos(angle) * brushRange + mouseX;
+      ypos = sin(angle) * brushRange + mouseY;
       point(xbristles[i], ybristles[i]);
       xbristles[i] = xpos;
       ybristles[i] = ypos;
