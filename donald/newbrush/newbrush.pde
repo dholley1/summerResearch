@@ -8,7 +8,7 @@ float transparency = 100;
 color c = color(100, 200, 50, 100);
 
 ArrayList<bristle> bristles = new ArrayList<bristle>();
-ArrayList<Leak> LEAKS = new ArrayList<Leak>();
+//ArrayList<Leak> LEAKS = new ArrayList<Leak>();
 
 void setup() {
   size(500, 500);
@@ -33,8 +33,6 @@ void draw() {
       float dy = mouseY - ypos;
       b.drag(dx, dy, xpos, ypos);
     }
-    Leak l = new Leak(xpos, ypos);
-      LEAKS.add(l);
   }
   else if(pressed) {
     //executes if the mouse has just been pressed
