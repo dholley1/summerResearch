@@ -8,8 +8,8 @@ class Canvas {
   PGraphics body;          // the graphical body of the Canvas
   
   //0:mouseX, 1:mouseY, 2:dx, 3:dy, 4:brushLength, 
-  // 5:brushTarget 6:brushThickness
-  public float[] vals = {0, 0, 0, 0, 0, 0, 0};
+  // 5:brushTarget 6:brushThickness 7:startingSpeed 
+  public float[] vals = {0, 0, 0, 0, 0, 0, 0, 0, 0};
   
   //booleans for when windows are created, when paintings are done,
   //and when new paintings can be started
@@ -80,9 +80,6 @@ class Canvas {
       transparency *= .95;
       body.stroke(c);
       
-      //advaces the brush by dx and dy, or puts the brush at a new location
-      advance(200, 200);
-      
       //increase or decrease radius of brush depending on speed
       if(brushVelocity >= 5)
         brushRange *= .9;
@@ -133,6 +130,9 @@ class Canvas {
           ybristles[i] = ypos;
         }
       }
+      //advaces the brush by dx and dy, or puts the brush at a new location
+      //upLeft();
+      downRight();
     }
     //after painting is done and saved, reset to all white
     if(reset){
@@ -150,19 +150,20 @@ class Canvas {
   }
   
   //method for advancing each frame
-  public void advance(int sizeX, int sizeY) {
-    if (vals[1] >= sizeY) {
-      if (vals[0] >= sizeX) { 
+  public void downRight() {
+    if (vals[1] >= sideLength) {
+      if (vals[0] >= sideLength) { 
         done = true;
         return;
       }
       vals[1] = 0;
       vals[4] += vals[5];
+      vals[0] = vals[4] - vals[5];
       pressed = true;
       move = false;
     }
     else if (move) {
-      vals[0] -= vals[5];
+      vals[0] = vals[4] - vals[5];
       vals[1] += vals[5];
       move = false;
       pressed = true;
@@ -171,6 +172,32 @@ class Canvas {
       vals[0] += vals[2];
       vals[1] += vals[3];
       if(vals[0] >= vals[4])
+        move = true;
+    }
+  }
+  
+  public void upLeft() {
+    if (vals[1] >= sideLength) {
+      if (vals[0] >= sideLength) { 
+        done = true;
+        return;
+      }
+      vals[1] = 0;
+      vals[4] += vals[5];
+      vals[0] += vals[5] * 2;
+      pressed = true;
+      move = false;
+    }
+    else if (move) {
+      vals[0] += vals[5];
+      vals[1] += vals[5] * 3;
+      move = false;
+      pressed = true;
+    }
+    else {
+      vals[0] -= vals[2];
+      vals[1] -= vals[3];
+      if(vals[0] <= vals[4] - vals[5])
         move = true;
     }
   }
