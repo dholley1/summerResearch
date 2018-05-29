@@ -19,7 +19,10 @@ void setup() {
     float deltaX = random(10, 40);
     float[] vs = {0, 0, random(5, 20), random(5, 20), deltaX, deltaX, random(5, 40)};
     allCanvases.add(new Canvas(100 + (i < 5 ? 201 * i : 201 * (i - 5)), 
-                               301 + (i < 5 ? 0 : 201), 200, color(255), vs));
+                               301 + (i < 5 ? 0 : 201), 200, color(255), vs,
+                               1, 1, 1, 1, 1, 1, 
+                               random(5, 20), random(5, 20), 1, 1, 1, 1,
+                               1, 1, 1, 1, 1));
   }
 }
 

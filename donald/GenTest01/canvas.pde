@@ -11,8 +11,44 @@ class Canvas {
   // 5:brushTarget 6:brushThickness 7:startingSpeed 
   public float[] vals = {0, 0, 0, 0, 0, 0, 0, 0};
   
+  //GENES
+  float xVelocity;
+  float yVelocity;
+  float deltaXVelocity;
+  float deltaYVelocity;
+  float variationXVelocity;
+  float variationYVelocity;
+  float brushLength;
+  float brushThickness;
+  float brushPressure;
+  float deltaBrushPressure;
+  float variationBrushPressure;
+  float xPos;
+  float yPos;
+  float deltaXPos;
+  float deltaYPos;
+  float variationYPos;
+  float variationXPos;
   
-  //public float[] genes = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+  float[] genes = {xVelocity, yVelocity, deltaXVelocity, deltaYVelocity,
+                   variationXVelocity, variationYVelocity, brushLength, brushThickness,
+                   brushPressure, deltaBrushPressure, variationBrushPressure, xPos,
+                   yPos, deltaXPos, deltaYPos, variationYPos, variationXPos};
+  
+  //STORE VALUES
+  float origXVelocity;
+  float origYVelocity;
+  float origDeltaYVelocity;
+  float origDeltaXVelocity;
+  float origXPos;
+  float origYPos;
+  float origDeltaXPos;
+  float origDeltaYPos;
+  float origBrushPressure;
+  float origDeltaBrushPressure;
+  float origBrushThickness;
+  float currentLength;
+  
   
   //booleans for when windows are created, when paintings are done,
   //and when new paintings can be started
@@ -34,7 +70,7 @@ class Canvas {
   //brush velocity and thickness variables
   float brushVelocity = 0;
   float brushRange;
-  float brushThickness;
+  //float brushThickness;
 
   //x and y position of the brush at its last position
   float xpos = 0;
@@ -44,14 +80,37 @@ class Canvas {
   color c;
   float transparency = 100;
   
-  Canvas(float x, float y, int s, color c, float[] v) {
+  Canvas(float x, float y, int s, color c, float[] v,
+         float xv, float yv, float dxv, float dyv, float vxv, float vyv,
+         float bl, float bt, float bp, float dbp, float vbp, float xp,
+         float yp, float dxp, float dyp, float vxp, float vyp) {
     xCenter = x;
     yCenter = y;
     sideLength = s;
     fillColor = c;
     vals = v;
-    brushRange = vals[6];
-    brushThickness = vals[6];
+    //brushRange = vals[6];
+    //brushThickness = vals[6];
+    
+    xVelocity = origXVelocity = xv;
+    yVelocity = origYVelocity = yv;
+    deltaXVelocity = origDeltaXVelocity = dxv;
+    deltaYVelocity = origDeltaYVelocity = dyv;
+    variationXVelocity = vxv;
+    variationYVelocity = vyv;
+    brushLength = bl;
+    brushThickness = origBrushThickness = bt;
+    brushPressure = origBrushPressure = bp;
+    deltaBrushPressure = origDeltaBrushPressure = dbp;
+    variationBrushPressure = vbp;
+    xPos = origXPos = xp;
+    yPos = origYPos = yp;
+    deltaXPos = origDeltaXPos = dxp;
+    deltaYPos = origDeltaYPos = dyp;
+    variationXPos = vxp;
+    variationYPos = vyp;
+    
+    
     body = createGraphics(sideLength, sideLength);
     for(int i = 0; i < 400; i ++)
       bristles.add(new bristle(body));
@@ -206,6 +265,39 @@ class Canvas {
         move = true;
     }
   }
+
+  void advance() {
+    if(move) {
+      xPos = origXPos;
+      yPos = origYPos;
+ 
+      xPos += deltaXPos;
+      yPos += deltaYPos;
+      
+      deltaXPos += variationXPos;
+      deltaYPos += variationYPos;
+      
+      xVelocity = origXVelocity;
+      yVelocity = origYVelocity;
+      deltaXVelocity = origDeltaXVelocity;
+      deltaYVelocity = origDeltaYVelocity;
+      
+      brushPressure = origBrushPressure;
+      deltaBrushPressure = origDeltaBrushPressure;
+      
+    }
+    else {
+      xPos += xVelocity;
+      yPos += yVelocity;
+      xVelocity += deltaXVelocity;
+      yVelocity += deltaYVelocity;
+      deltaXVelocity += variationXVelocity;
+      deltaYVelocity += variationYVelocity;
+      brushPressure += deltaBrushPressure;
+      deltaBrushPressure += variationBrushPressure;
+    }
+    
+  }
   
   //method for reproducing traits
   float[] crossover(Canvas partner) {
@@ -222,6 +314,18 @@ class Canvas {
     newGenes[0] = 0;
     newGenes[1] = 0;
     newGenes[4] = newGenes[5];
+    return newGenes;
+  }
+  
+  float[] crossover2(Canvas partner) {
+    float[] newGenes = new float[17];
+    for(int i = 0; i < 17; i++) {
+      float choice = random(1);
+      if (choice < .5)
+        newGenes[i] = genes[i];
+      else
+        newGenes[i] = partner.genes[i];
+    }
     return newGenes;
   }
   
