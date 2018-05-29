@@ -1,3 +1,5 @@
+int global = 0;
+
 // Take a filename of a painting to test how different it is from the
 // original and return the score in float type
 float score_painting(String filename) {
@@ -10,6 +12,10 @@ float score_painting(String filename) {
   float scoreColor = color_variation();
 
   float finalScore = round(scorePixel*0.4 + scoreWhite*0.3 + scoreColor*0.3);
+  
+  println(global, "pixel: ", scorePixel, " white: ", scoreWhite, " color: ", scoreColor, " final: ", finalScore);
+  
+  global++;
   return finalScore;
 }
 
@@ -33,7 +39,7 @@ float[] percentage() {
   // Calculate the percentage of the scores
   for (int n = 0; n < POPULATION; n++) {  
     perChart[n] = (scoreChart[n] / totalScore) * 100;
-    println(n, "score ", scoreChart[n], " percent ", perChart[n]);
+    //println(n, "score ", scoreChart[n], " percent ", perChart[n]);
   }
 
   return perChart;
