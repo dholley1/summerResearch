@@ -1,21 +1,10 @@
 // global variables
 PImage result;
-int SIZE = WIDTH * HEIGHT;
-
-//float scaling(float d) {
-//  if (d < 5) return 100;
-//  else if (d < 20) return 95;
-//  else if (d < 30) return 80;
-//  else if (d < 40) return 60;
-//  else if (d < 50) return 40;
-//  else if (d < 60) return 20;
-//  else return 10;
-//}
+int PICSIZE = WIDTH * HEIGHT;
+int global = 0;
 
 float scaling(float diff) {
-  //println("diff: ", diff);
   float d = (diff/255)*100;
-  //println("d: ", d);
   if (d < 80) return 100;
   else if (d < 82) return 95;
   else if (d < 85) return 80;
@@ -27,31 +16,29 @@ float scaling(float diff) {
   else return 0;
 }
 
-float pixel_color(String filename) {
+float pixel_color() {
 
   float difference = 0;
   
-  for (int i = 0; i < SIZE; i++) {
+  for (int i = 0; i < PICSIZE; i++) {
     
     float r = scaling(abs(red(input.pixels[i]) - red(result.pixels[i])));
     float g = scaling(abs(green(input.pixels[i]) - green(result.pixels[i])));
     float b = scaling(abs(blue(input.pixels[i]) - blue(result.pixels[i])));
 
-    //println("diff:", (r + g + b) / 3);
     difference += ((r + g + b) / 3);
   }
 
-  // divide by SIZE since difference at this point is the sum of differences for all pixels
-  float score = difference / SIZE;
-  //println("score:", score);
+  // divide by PICSIZE since difference at this point is the sum of differences for all pixels
+  float score = difference / PICSIZE;
   return score;
 }
 
-float check_white(String filename) {
+float check_white() {
   
   float count = 0;
   
-  for (int i=0; i<SIZE; i++) {
+  for (int i=0; i<PICSIZE; i++) {
     
     // get the color of the pixel
     color c = result.pixels[i];
@@ -67,25 +54,86 @@ float check_white(String filename) {
   }
   
   // count is the count of wrongly placed white pixels
-  // SIZE - count is the properly placed pixels
+  // PICSIZE - count is the properly placed pixels
   //println("count: ", count);
-  float score = ((SIZE - count) / SIZE) * 100;
+  float score = ((PICSIZE - count) / PICSIZE) * 100;
+  
+  return score;
+}
+
+class variety {
+
+  float[] r;
+  float[] g;
+  float[] b;
+
+  int _size;
+  
+  variety() {
+    r = new float[PICSIZE];
+    g = new float[PICSIZE];
+    b = new float[PICSIZE];
+
+    _size = 0;
+  }
+  
+  boolean checkColor(color c) {
+    // true if the given color exists in the array
+    // false if the given color can be added
+
+    for (int i=0; i<_size; i++) {
+      if (r[i]==red(c) && g[i]==green(c) && b[i]==blue(c))
+        return true;
+    }
+
+    return false;
+  }
+  
+  void addColor(color c) {
+    if (!checkColor(c)) {
+      r[_size] = red(c);
+      g[_size] = green(c);
+      b[_size] = blue(c);
+
+      _size++;
+    }
+  }
+  
+  int getSize() {
+    // return the size of the array
+    return _size;
+  }
+}
+
+float color_variation() {
+  variety v = new variety();
+
+  for (int i=0; i<PICSIZE; i++) {
+    v.addColor(result.pixels[i]);
+  }
+  
+  float infloat = v.getSize();
+  float score = (infloat/PICSIZE)*100;
   
   return score;
 }
 
 // Take a filename of a painting to test how different it is from the
 // original and return the score in float type
-float score_one(String filename) {
+float score_painting(String filename) {
   result = loadImage(filename);
   input.loadPixels();
   result.loadPixels();
-  SIZE = WIDTH * HEIGHT;
 
-  float score1 = pixel_color(filename);
-  float score2 = check_white(filename);
-  //println("score1: ", score1, "|score2: ", score2);
-  return score1*0.3 + score2*0.7;
+  float scorePixel = pixel_color();
+  float scoreWhite = check_white();
+  float scoreColor = color_variation();
+
+  float finalScore = round(scorePixel*0.3 + scoreWhite*0.5 + scoreColor*0.2);
+  //float finalScore = round(scorePixel*0.3 + scoreWhite*0.7);
+  //println(global, " finalScore: ", finalScore);
+  //global++;
+  return finalScore;
 }
 
 
@@ -101,7 +149,9 @@ float[] percentage() {
   // Call the test function on each painting to get its score
   for (int n=0; n<POPULATION; n++) {
     String painting = Integer.toString(n + GEN * 3) + ".png";
-    scoreChart[n] = score_one(painting);
+    scoreChart[n] = score_painting(painting);
+    println(global, " finalScore: ", scoreChart[n]);
+    global++;
     totalScore += scoreChart[n];
   }
   
@@ -116,37 +166,16 @@ float[] percentage() {
 // Compare a given random number with the range to find what range does
 // the given random number represent
 int compare(float[] range, float randNum) {
-  if (randNum<range[0]) {
-    return 0;
-  }
-  else if (range[0]<=randNum && randNum<range[1]) {
-    return 1;
-  }
-  else if (range[1]<=randNum && randNum<range[2]) {
-    return 2;
-  }
-  else if (range[2]<=randNum && randNum<range[3]) {
-    return 3;
-  }
-  else if (range[3]<=randNum && randNum<range[4]) {
-    return 4;
-  }
-  else if (range[4]<=randNum && randNum<range[5]) {
-    return 5;
-  }
-  else if (range[5]<=randNum && randNum<range[6]) {
-    return 6;
-  }
-  else if (range[6]<=randNum && randNum<range[7]) {
-    return 7;
-  }
-  else if (range[7]<=randNum && randNum<range[8]) {
-    return 8;
-  }
-  else {
-  //else if (range[8]<=randNum) {
-    return 9;
-  }
+  if (randNum<range[0]) return 0;
+  else if (range[0]<=randNum && randNum<range[1]) return 1;
+  else if (range[1]<=randNum && randNum<range[2]) return 2;
+  else if (range[2]<=randNum && randNum<range[3]) return 3;
+  else if (range[3]<=randNum && randNum<range[4]) return 4;
+  else if (range[4]<=randNum && randNum<range[5]) return 5;
+  else if (range[5]<=randNum && randNum<range[6]) return 6;
+  else if (range[6]<=randNum && randNum<range[7]) return 7;
+  else if (range[7]<=randNum && randNum<range[8]) return 8;
+  else return 9;
 }
 
 // Select two parents using other methods
