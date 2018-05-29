@@ -10,10 +10,16 @@ class bristle {
   
   float div = 100;
   
+  PGraphics canvas;
+  
+  bristle (PGraphics c) {
+    canvas = c;
+  }
+  
   void press(float x, float y) {
     xpos = x;
     ypos = y;
-    point(x, y);
+    canvas.point(x, y);
   }
   
   void drag(float dx, float dy, float x, float y) {
@@ -24,7 +30,7 @@ class bristle {
                                    : (y - ypos) / div * (speed + 1);
     float newx = xpos + dx + random(lowXFactor, highXFactor) + xchange;
     float newy = ypos + dy + random(lowYFactor, highYFactor) + ychange;
-    line(xpos, ypos, newx, newy);
+    canvas.line(xpos, ypos, newx, newy);
     xpos = newx;
     ypos = newy;
   }

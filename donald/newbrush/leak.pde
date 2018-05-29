@@ -30,10 +30,10 @@ class Leak {
     done = true;
   }
   
-  void addTo() {
-    for(Leak l: leaks) {
-      LEAKS.add(l);
-    }
-    leaks.clear();
-  }
+  //void addTo() {
+    //for(Leak l: leaks) {
+      //LEAKS.add(l);
+    //}
+    //leaks.clear();
+  //}
 }

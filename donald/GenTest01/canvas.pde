@@ -11,6 +11,9 @@ class Canvas {
   // 5:brushTarget 6:brushThickness 7:startingSpeed 
   public float[] vals = {0, 0, 0, 0, 0, 0, 0, 0};
   
+  
+  //public float[] genes = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+  
   //booleans for when windows are created, when paintings are done,
   //and when new paintings can be started
   boolean start = true;
@@ -23,8 +26,10 @@ class Canvas {
   public boolean done = false;
   
   //indivitual bristle points
-  float[] xbristles = new float[400];
-  float[] ybristles = new float[400];
+  //float[] xbristles = new float[400];
+  //float[] ybristles = new float[400];
+  //bristles for brush
+  ArrayList<bristle> bristles = new ArrayList<bristle>();
   
   //brush velocity and thickness variables
   float brushVelocity = 0;
@@ -48,6 +53,8 @@ class Canvas {
     brushRange = vals[6];
     brushThickness = vals[6];
     body = createGraphics(sideLength, sideLength);
+    for(int i = 0; i < 400; i ++)
+      bristles.add(new bristle(body));
   }
 
   void display() {
@@ -81,13 +88,13 @@ class Canvas {
       body.stroke(c);
       
       //increase or decrease radius of brush depending on speed
-      if(brushVelocity >= 5)
-        brushRange *= .9;
-      else {
-        brushRange *= 1.1;
-        if(brushRange > 20)
-          brushRange = 20;
-      }
+      //if(brushVelocity >= 5)
+       // brushRange *= .9;
+      //else {
+       // brushRange *= 1.1;
+        //if(brushRange > 20)
+         // brushRange = 20;
+      //}
       
       //in case the brush was picked up
       if(pressed) {
@@ -104,13 +111,11 @@ class Canvas {
         brushRange = brushThickness;
         
         //pick random points for each bristle
-        for(int i = 0; i < 100; i++) {
-          float rand = random(0, 2*PI);
-          xpos = cos(rand) * brushRange + vals[0];
-          ypos = sin(rand) * brushRange + vals[1];
-          body.point(xpos, ypos);
-          xbristles[i] = xpos;
-          ybristles[i] = ypos;
+        for(bristle b: bristles) {
+          float angle = random(0, 2*PI);
+          b.press(vals[0] + cos(angle) * random(0, brushRange),
+                  vals[1] + sin(angle) * random(0, brushRange));
+          
           pressed = false;
         }
       }
@@ -121,15 +126,15 @@ class Canvas {
         c = color(red(c), green(c), blue(c), transparency);
         
         //drag each bristle to new random location
-        for(int i = 0; i < 100; i++) {
-          float rand = random(0, 2*PI);
-          xpos = cos(rand) * brushRange + vals[0];
-          ypos = sin(rand) * brushRange + vals[1];
-          body.line(xbristles[i], ybristles[i], xpos, ypos);
-          xbristles[i] = xpos;
-          ybristles[i] = ypos;
+        for(bristle b: bristles) {
+          float dx = vals[0] - xpos;
+          float dy = vals[1] - ypos;
+          b.drag(dx, dy, xpos, ypos);
+
         }
       }
+      xpos = vals[0];
+      ypos = vals[1];
       //advaces the brush by dx and dy, or puts the brush at a new location
       //upLeft();
       downRight();
