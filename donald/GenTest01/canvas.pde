@@ -11,8 +11,46 @@ class Canvas {
   // 5:brushTarget 6:brushThickness 7:startingSpeed 
   public float[] vals = {0, 0, 0, 0, 0, 0, 0, 0};
   
+  //GENES
+  float xVelocity;
+  float yVelocity;
+  float deltaXVelocity;
+  float deltaYVelocity;
+  float variationXVelocity;
+  float variationYVelocity;
+  float brushLength;
+  float brushThickness;
+  float brushPressure;
+  float deltaBrushPressure;
+  float variationBrushPressure;
+  float xPos;
+  float yPos;
+  float deltaXPos;
+  float deltaYPos;
+  float variationYPos;
+  float variationXPos;
   
-  //public float[] genes = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+  float[] genes = {xVelocity, yVelocity, deltaXVelocity, deltaYVelocity,
+                   variationXVelocity, variationYVelocity, brushLength, brushThickness,
+                   brushPressure, deltaBrushPressure, variationBrushPressure, xPos,
+                   yPos, deltaXPos, deltaYPos, variationYPos, variationXPos};
+  
+  //STORE VALUES
+  float origXVelocity;
+  float origYVelocity;
+  float origDeltaYVelocity;
+  float origDeltaXVelocity;
+  float origXPos;
+  float origYPos;
+  float lastXPos;
+  float lastYPos;
+  float origDeltaXPos;
+  float origDeltaYPos;
+  float origBrushPressure;
+  float origDeltaBrushPressure;
+  float origBrushThickness;
+  float currentLength;
+  
   
   //booleans for when windows are created, when paintings are done,
   //and when new paintings can be started
@@ -34,7 +72,7 @@ class Canvas {
   //brush velocity and thickness variables
   float brushVelocity = 0;
   float brushRange;
-  float brushThickness;
+  //float brushThickness;
 
   //x and y position of the brush at its last position
   float xpos = 0;
@@ -44,14 +82,37 @@ class Canvas {
   color c;
   float transparency = 100;
   
-  Canvas(float x, float y, int s, color c, float[] v) {
+  Canvas(float x, float y, int s, color c, float[] v,
+         float xv, float yv, float dxv, float dyv, float vxv, float vyv,
+         float bl, float bt, float bp, float dbp, float vbp, float xp,
+         float yp, float dxp, float dyp, float vxp, float vyp) {
     xCenter = x;
     yCenter = y;
     sideLength = s;
     fillColor = c;
     vals = v;
-    brushRange = vals[6];
-    brushThickness = vals[6];
+    //brushRange = vals[6];
+    //brushThickness = vals[6];
+    
+    xVelocity = origXVelocity = xv;
+    yVelocity = origYVelocity = yv;
+    deltaXVelocity = origDeltaXVelocity = dxv;
+    deltaYVelocity = origDeltaYVelocity = dyv;
+    variationXVelocity = vxv;
+    variationYVelocity = vyv;
+    brushLength = bl;
+    brushThickness = origBrushThickness = bt;
+    brushPressure = origBrushPressure = bp;
+    deltaBrushPressure = origDeltaBrushPressure = dbp;
+    variationBrushPressure = vbp;
+    xPos = origXPos = xp;
+    yPos = origYPos = yp;
+    deltaXPos = origDeltaXPos = dxp;
+    deltaYPos = origDeltaYPos = dyp;
+    variationXPos = vxp;
+    variationYPos = vyp;
+    
+    
     body = createGraphics(sideLength, sideLength);
     for(int i = 0; i < 400; i ++)
       bristles.add(new bristle(body));
@@ -72,6 +133,7 @@ class Canvas {
     
     // Add the Canvas to the window; the math is for centering correctly,
     // as an image uses the upper left corner as the origin:
+    //if(done)
     image(body, xCenter - sideLength/2, yCenter - sideLength/2);
     
   }
@@ -99,9 +161,12 @@ class Canvas {
       //in case the brush was picked up
       if(pressed) {
         
+        lastXPos = xPos;
+        lastYPos = yPos;
+        
         //get new location color
         //c = picture.get((int)vals[0], (int)vals[1]);
-        c = get((int)vals[0], (int)vals[1]);
+        c = get((int)xPos, (int)yPos);
         
         //reset transparency
         transparency = 100;
@@ -113,8 +178,8 @@ class Canvas {
         //pick random points for each bristle
         for(bristle b: bristles) {
           float angle = random(0, 2*PI);
-          b.press(vals[0] + cos(angle) * random(0, brushRange),
-                  vals[1] + sin(angle) * random(0, brushRange));
+          b.press(xPos + cos(angle) * random(0, brushRange),
+                  yPos + sin(angle) * random(0, brushRange));
           
           pressed = false;
         }
@@ -127,17 +192,18 @@ class Canvas {
         
         //drag each bristle to new random location
         for(bristle b: bristles) {
-          float dx = vals[0] - xpos;
-          float dy = vals[1] - ypos;
+          float dx = xPos - xpos;
+          float dy = yPos - ypos;
           b.drag(dx, dy, xpos, ypos);
 
         }
       }
-      xpos = vals[0];
-      ypos = vals[1];
+      xpos = xPos;
+      ypos = xPos;
       //advaces the brush by dx and dy, or puts the brush at a new location
       //upLeft();
-      downRight();
+      //downRight();
+      advance();
     }
     //after painting is done and saved, reset to all white
     if(reset){
@@ -206,6 +272,48 @@ class Canvas {
         move = true;
     }
   }
+
+  void advance() {
+    if(move) {
+      println(deltaXPos);
+      //println(xPos);
+      xPos = lastXPos;
+      yPos = lastYPos;
+ 
+      xPos += deltaXPos;
+      yPos += deltaYPos;
+      
+      deltaXPos += variationXPos;
+      deltaYPos += variationYPos;
+      
+      xVelocity = origXVelocity;
+      yVelocity = origYVelocity;
+      deltaXVelocity = origDeltaXVelocity;
+      deltaYVelocity = origDeltaYVelocity;
+      
+      brushPressure = origBrushPressure;
+      deltaBrushPressure = origDeltaBrushPressure;
+      
+      currentLength = 0;
+      move = false;
+      pressed = true;
+      
+    }
+    else {
+      xPos += xVelocity;
+      yPos += yVelocity;
+      xVelocity += deltaXVelocity;
+      yVelocity += deltaYVelocity;
+      deltaXVelocity += variationXVelocity;
+      deltaYVelocity += variationYVelocity;
+      brushPressure += deltaBrushPressure;
+      deltaBrushPressure += variationBrushPressure;
+      currentLength += sqrt(pow(xPos - xpos, 2) + pow(yPos - ypos, 2));
+      if (currentLength >= brushLength) {
+        move = true;
+      }
+    }
+  }
   
   //method for reproducing traits
   float[] crossover(Canvas partner) {
@@ -222,6 +330,18 @@ class Canvas {
     newGenes[0] = 0;
     newGenes[1] = 0;
     newGenes[4] = newGenes[5];
+    return newGenes;
+  }
+  
+  float[] crossover2(Canvas partner) {
+    float[] newGenes = new float[17];
+    for(int i = 0; i < 17; i++) {
+      float choice = random(1);
+      if (choice < .5)
+        newGenes[i] = genes[i];
+      else
+        newGenes[i] = partner.genes[i];
+    }
     return newGenes;
   }
   

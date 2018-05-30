@@ -8,7 +8,6 @@ static int PAINTING = 0;
 static int GEN = 0;
 float[][] genes = new float[POPULATION][7];
 
-
 void setup() {
   size(1005, 603);
   background(50);
@@ -16,10 +15,16 @@ void setup() {
   input = loadImage("flower.jpg");
   image(input, 0, 0, 200, 200);
   for(int i = 0; i < POPULATION; i++) {
-    float deltaX = random(10, 40);
-    float[] vs = {0, 0, random(5, 20), random(5, 20), deltaX, deltaX, random(5, 40)};
+    float deltaX = 10;//random(10, 40);
+    float[] vs = {0, 0, 20/*random(5, 20)*/, 20/*random(5, 20)*/, deltaX, deltaX, 5/*random(5, 40)*/};
     allCanvases.add(new Canvas(100 + (i < 5 ? 201 * i : 201 * (i - 5)), 
-                               301 + (i < 5 ? 0 : 201), 200, color(255), vs));
+                               301 + (i < 5 ? 0 : 201), 200, color(255), vs,
+                               
+                               random(-20, 20), random(-20, 20), random(-10, 10), random(-10, 10),
+                               random(-1, 1), random(-1, 1), random(1, 100), random(5, 10),
+                               1, 1, 1, //bp
+                               random(0, WIDTH), random(0, HEIGHT), random(-20, 20),
+                               random(-20, 20), random(-1, 1), random(-1, 1)));
   }
 }
 
@@ -48,7 +53,9 @@ void draw() {
     
     //if all painting are finished
     if(count == POPULATION) {
+      println(millis());
       for(Canvas c: allCanvases) {
+        //c.display();
         //saves images so they can be compared to original image
         c.saveImage("data/"+Integer.toString(PAINTING)+".png");
         PAINTING++;
@@ -75,4 +82,9 @@ void draw() {
     //reset count each time
     count = 0;
   }
+}
+
+
+void keyPressed() {
+  save("../../screenShots/screenShot1.png");
 }

@@ -83,6 +83,10 @@ int[] selection() {
   // Array to save parents
   int[] parents = new int[2];
  
+  for (int i=0; i<range.length; i++) {
+    println("range", i, ": ", range[i]);
+  }
+ 
   circleGraph cg = new circleGraph();
   cg.fillGraph(range);
   parents[0] = cg.whereGraph(r1);
@@ -94,9 +98,6 @@ int[] selection() {
       r2 = random(100);
       parents[1] = cg.whereGraph(r2);
     }
-  }
-  for (int i=0; i<range.length; i++) {
-    println("range", i, ": ", range[i]);
   }
   println("parents: ", parents[0], parents[1]);
   return parents;

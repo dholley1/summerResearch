@@ -12,12 +12,17 @@ class pie {
   }
   
   boolean within_range(float f) {
-    if (min <= f && f < max) return true;
+    if (min <= f && f < max) {
+      println(f, "within range");
+      return true;
+    }
+    println("NOT within range");
     return false;
   }
   
   int check_range(float f) {
     if (within_range(f)) return n;
+    println("error");
     return -1;
   }
 }
@@ -32,14 +37,19 @@ class circleGraph {
   
   void fillGraph(float[] range) {
     for (int i = 0; i<POPULATION; i++) {
-      if (i==0) pies[i] = new pie(i, 0, range[i]);
+      if (i==0) {
+        pies[i] = new pie(i, 0, range[i]);
+        println("for 0", range[i]);
+      }
       else pies[i] = new pie(i, range[i-1], range[i]);
     }
   }
   
   int whereGraph(float f) {
+    println("f value: ", f);
     for (int i = 0; i<POPULATION; i++) {
-      if (pies[i].check_range(f) != -1) return pies[i].check_range(f);
+      float found = pies[i].check_range(f);
+      if (found != -1) return found;
     }
     return -1;
   }
