@@ -15,13 +15,11 @@ void setup() {
   input = loadImage("flower.jpg");
   image(input, 0, 0, 200, 200);
   for(int i = 0; i < POPULATION; i++) {
-    //float deltaX = 10;//random(10, 40);
-    //float[] vs = {0, 0, 20/*random(5, 20)*/, 20/*random(5, 20)*/, deltaX, deltaX, 5/*random(5, 40)*/};
     allCanvases.add(new Canvas(100 + (i < 5 ? 201 * i : 201 * (i - 5)), 
                                301 + (i < 5 ? 0 : 201), 200, color(255),
                                
-                               random(-.05, .05), random(-.05, .05), 0, 0,
-                               0, 0, random(1, 100), random(5, 10),
+                               random(-10, 10), random(-10, 10), random(-1, 1), random(-1, 1),
+                               random(-.5, .5), random(-.5, .5), random(1, 200), random(1, 20),
                                
                                1, 1, 1, //bp
                                
@@ -67,12 +65,13 @@ void draw() {
         int[] sel = selection();
         Canvas parent = allCanvases.get(sel[0]);
         Canvas partner = allCanvases.get(sel[1]);
-        genes[i] = parent.crossover2(partner);
+        genes[i] = parent.crossover(partner);
       }
       
       //loop for assigning new genes
       for(int i = 0; i < POPULATION; i++) {
         allCanvases.get(i).genes = genes[i];
+        allCanvases.get(i).assignGenes();
         allCanvases.get(i).pressed = true;
       }
     }
@@ -84,7 +83,7 @@ void draw() {
 
 
 void keyPressed() {
-  save("../../screenShots/donaldScreenShot003.png");
-  //for(Canvas c: allCanvases)
-    //c.done = true;
+  //save("../../screenShots/donaldScreenShot006.png");
+  for(Canvas c: allCanvases)
+    c.done = true;
 }

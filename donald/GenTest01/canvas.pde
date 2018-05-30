@@ -44,21 +44,16 @@ class Canvas {
   float offChance;
   ////////////////
   //GENES AS RANGES
-  float[] xVelocityRange;
-  float[] yVelocityRange;
-  float[] brushLengthRange;
-  float[] brushThicknessRange;
-  float[] brushPressureRange;
-  float[] deltaXPosRange;
-  float[] deltaYPosRange;
+  //float[] xVelocityRange;
+  //float[] yVelocityRange;
+  //float[] brushLengthRange;
+  //float[] brushThicknessRange;
+  //float[] brushPressureRange;
+  //float[] deltaXPosRange;
+  //float[] deltaYPosRange;
   ////////////////
   
-  float[] genes = {xVelocity, yVelocity, 
-                   deltaXVelocity, deltaYVelocity,
-                   variationXVelocity, variationYVelocity, 
-                   brushLength, brushThickness,
-                   brushPressure, deltaBrushPressure, variationBrushPressure, 
-                   xPos, yPos, deltaXPos, deltaYPos, variationYPos, variationXPos};
+  float[] genes = new float[17];
   
   //STORE VALUES
   float origXVelocity;
@@ -120,9 +115,6 @@ class Canvas {
     yCenter = y;
     sideLength = s;
     fillColor = c;
-    //vals = v;
-    //brushRange = vals[6];
-    //brushThickness = vals[6];
     
     xVelocity = origXVelocity = xv;
     yVelocity = origYVelocity = yv;
@@ -142,6 +134,23 @@ class Canvas {
     variationXPos = vxp;
     variationYPos = vyp;
     
+    genes[0] = xVelocity;
+    genes[1] = yVelocity;
+    genes[2] = deltaXVelocity;
+    genes[3] = deltaYVelocity;
+    genes[4] = variationXVelocity;
+    genes[5] = variationYVelocity; 
+    genes[6] = brushLength;
+    genes[7] = brushThickness;
+    genes[8] = brushPressure;
+    genes[9] = deltaBrushPressure;
+    genes[10] = variationBrushPressure;
+    genes[11] = xPos;
+    genes[12] = yPos;
+    genes[13] = deltaXPos;
+    genes[14] = deltaYPos;
+    genes[15] = variationYPos;
+    genes[16] = variationXPos;
     
     body = createGraphics(sideLength, sideLength);
     for(int i = 0; i < 400; i ++)
@@ -221,17 +230,15 @@ class Canvas {
         c = color(red(c), green(c), blue(c), transparency);
         
         //drag each bristle to new random location
+        float dx = xPos - xpos;
+        float dy = yPos - ypos;
         for(bristle b: bristles) {
-          float dx = xPos - xpos;
-          float dy = yPos - ypos;
           b.drag(dx, dy, xpos, ypos);
         }
       }
       xpos = xPos;
-      ypos = xPos;
+      ypos = yPos;
       //advaces the brush by dx and dy, or puts the brush at a new location
-      //upLeft();
-      //downRight();
       advance();
     }
     //after painting is done and saved, reset to all white
@@ -270,32 +277,31 @@ class Canvas {
    
         xPos += deltaXPos;
         yPos += deltaYPos;
-        
-        deltaXPos += variationXPos;
-        deltaYPos += variationYPos;
-        
-        xVelocity = origXVelocity;
-        yVelocity = origYVelocity;
-        deltaXVelocity = origDeltaXVelocity;
-        deltaYVelocity = origDeltaYVelocity;
-        
-        brushPressure = origBrushPressure;
-        deltaBrushPressure = origDeltaBrushPressure;
-        
-        currentLength = 0;
       }
+      deltaXPos += variationXPos;
+      deltaYPos += variationYPos;
+        
+      xVelocity = origXVelocity;
+      yVelocity = origYVelocity;
+      deltaXVelocity = origDeltaXVelocity;
+      deltaYVelocity = origDeltaYVelocity;
+        
+      brushPressure = origBrushPressure;
+      deltaBrushPressure = origDeltaBrushPressure;
+      
+      currentLength = 0;
       move = false;
       pressed = true;
     }
     else {
       xPos += xVelocity;
       yPos += yVelocity;
-      //xVelocity += deltaXVelocity;
-      //yVelocity += deltaYVelocity;
-      //deltaXVelocity += variationXVelocity;
-      //deltaYVelocity += variationYVelocity;
-      //brushPressure += deltaBrushPressure;
-      //deltaBrushPressure += variationBrushPressure;
+      xVelocity += deltaXVelocity;
+      yVelocity += deltaYVelocity;
+      deltaXVelocity += variationXVelocity;
+      deltaYVelocity += variationYVelocity;
+      brushPressure += deltaBrushPressure;
+      deltaBrushPressure += variationBrushPressure;
       currentLength += sqrt(pow(xPos - xpos, 2) + pow(yPos - ypos, 2));
       
       if (currentLength >= brushLength) {
@@ -308,7 +314,7 @@ class Canvas {
     }
   }
   
-  float[] crossover2(Canvas partner) {
+  float[] crossover(Canvas partner) {
     float[] newGenes = new float[17];
     for(int i = 0; i < 17; i++) {
       float choice = random(1);
@@ -318,6 +324,26 @@ class Canvas {
         newGenes[i] = partner.genes[i];
     }
     return newGenes;
+  }
+  
+  void assignGenes() {
+    xVelocity = genes[0];
+    yVelocity = genes[1];
+    deltaXVelocity = genes[2];
+    deltaYVelocity = genes[3];
+    variationXVelocity = genes[4];
+    variationYVelocity = genes[5];
+    brushLength = genes[6];
+    brushThickness = genes[7];
+    brushPressure = genes[8];
+    deltaBrushPressure = genes[9];
+    variationBrushPressure = genes[10];
+    xPos = genes[11];
+    yPos = genes[12];
+    deltaXPos = genes[13];
+    deltaYPos = genes[14];
+    variationYPos = genes[15];
+    variationXPos = genes[16];
   }
   
   void saveImage(String name) {
