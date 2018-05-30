@@ -48,7 +48,7 @@ class circleGraph {
   int whereGraph(float f) {
     println("f value: ", f);
     for (int i = 0; i<POPULATION; i++) {
-      float found = pies[i].check_range(f);
+      int found = pies[i].check_range(f);
       if (found != -1) return found;
     }
     return -1;
