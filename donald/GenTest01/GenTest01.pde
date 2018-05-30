@@ -6,8 +6,7 @@ ArrayList<Canvas> allCanvases = new ArrayList<Canvas>();
 PImage input;
 static int PAINTING = 0;
 static int GEN = 0;
-float[][] genes = new float[POPULATION][7];
-
+float[][] genes = new float[POPULATION][];
 
 void setup() {
   size(1005, 603);
@@ -16,10 +15,16 @@ void setup() {
   input = loadImage("flower.jpg");
   image(input, 0, 0, 200, 200);
   for(int i = 0; i < POPULATION; i++) {
-    float deltaX = random(10, 40);
-    float[] vs = {0, 0, random(5, 20), random(5, 20), deltaX, deltaX, random(5, 40)};
     allCanvases.add(new Canvas(100 + (i < 5 ? 201 * i : 201 * (i - 5)), 
-                               301 + (i < 5 ? 0 : 201), 200, color(255), vs));
+                               301 + (i < 5 ? 0 : 201), 200, color(255),
+                               
+                               random(-10, 10), random(-10, 10), random(-1, 1), random(-1, 1),
+                               random(-.5, .5), random(-.5, .5), random(1, 200), random(1, 20),
+                               
+                               1, 1, 1, //bp
+                               
+                               random(0, WIDTH), random(0, HEIGHT), random(-20, 20),
+                               random(-20, 20), random(-.1, .1), random(-.1, .1)));
   }
 }
 
@@ -65,14 +70,20 @@ void draw() {
       
       //loop for assigning new genes
       for(int i = 0; i < POPULATION; i++) {
-        allCanvases.get(i).vals = genes[i];
+        allCanvases.get(i).genes = genes[i];
+        allCanvases.get(i).assignGenes();
         allCanvases.get(i).pressed = true;
-        allCanvases.get(i).brushRange = genes[i][6];
-        allCanvases.get(i).brushThickness = genes[i][6];
       }
     }
     
     //reset count each time
     count = 0;
   }
+}
+
+
+void keyPressed() {
+  //save("../../screenShots/donaldScreenShot006.png");
+  for(Canvas c: allCanvases)
+    c.done = true;
 }
