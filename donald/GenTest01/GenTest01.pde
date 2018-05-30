@@ -6,7 +6,7 @@ ArrayList<Canvas> allCanvases = new ArrayList<Canvas>();
 PImage input;
 static int PAINTING = 0;
 static int GEN = 0;
-float[][] genes = new float[POPULATION][7];
+float[][] genes = new float[POPULATION][];
 
 void setup() {
   size(1005, 603);
@@ -15,16 +15,18 @@ void setup() {
   input = loadImage("flower.jpg");
   image(input, 0, 0, 200, 200);
   for(int i = 0; i < POPULATION; i++) {
-    float deltaX = 10;//random(10, 40);
-    float[] vs = {0, 0, 20/*random(5, 20)*/, 20/*random(5, 20)*/, deltaX, deltaX, 5/*random(5, 40)*/};
+    //float deltaX = 10;//random(10, 40);
+    //float[] vs = {0, 0, 20/*random(5, 20)*/, 20/*random(5, 20)*/, deltaX, deltaX, 5/*random(5, 40)*/};
     allCanvases.add(new Canvas(100 + (i < 5 ? 201 * i : 201 * (i - 5)), 
-                               301 + (i < 5 ? 0 : 201), 200, color(255), vs,
+                               301 + (i < 5 ? 0 : 201), 200, color(255),
                                
-                               random(-20, 20), random(-20, 20), random(-10, 10), random(-10, 10),
-                               random(-1, 1), random(-1, 1), random(1, 100), random(5, 10),
+                               random(-.05, .05), random(-.05, .05), 0, 0,
+                               0, 0, random(1, 100), random(5, 10),
+                               
                                1, 1, 1, //bp
+                               
                                random(0, WIDTH), random(0, HEIGHT), random(-20, 20),
-                               random(-20, 20), random(-1, 1), random(-1, 1)));
+                               random(-20, 20), random(-.1, .1), random(-.1, .1)));
   }
 }
 
@@ -53,9 +55,7 @@ void draw() {
     
     //if all painting are finished
     if(count == POPULATION) {
-      println(millis());
       for(Canvas c: allCanvases) {
-        //c.display();
         //saves images so they can be compared to original image
         c.saveImage("data/"+Integer.toString(PAINTING)+".png");
         PAINTING++;
@@ -67,15 +67,13 @@ void draw() {
         int[] sel = selection();
         Canvas parent = allCanvases.get(sel[0]);
         Canvas partner = allCanvases.get(sel[1]);
-        genes[i] = parent.crossover(partner);
+        genes[i] = parent.crossover2(partner);
       }
       
       //loop for assigning new genes
       for(int i = 0; i < POPULATION; i++) {
-        allCanvases.get(i).vals = genes[i];
+        allCanvases.get(i).genes = genes[i];
         allCanvases.get(i).pressed = true;
-        allCanvases.get(i).brushRange = genes[i][6];
-        allCanvases.get(i).brushThickness = genes[i][6];
       }
     }
     
@@ -86,5 +84,7 @@ void draw() {
 
 
 void keyPressed() {
-  save("../../screenShots/screenShot1.png");
+  save("../../screenShots/donaldScreenShot003.png");
+  //for(Canvas c: allCanvases)
+    //c.done = true;
 }

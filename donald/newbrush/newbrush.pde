@@ -56,5 +56,4 @@ void mouseReleased() {
   active = false;
   transparency = 100;
   brushRange = 10;
-  //LEAKS.clear();
 }

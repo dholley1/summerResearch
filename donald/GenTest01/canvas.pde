@@ -9,8 +9,8 @@ class Canvas {
   
   //0:mouseX, 1:mouseY, 2:dx, 3:dy, 4:brushLength, 
   // 5:brushTarget 6:brushThickness 7:startingSpeed 
-  public float[] vals = {0, 0, 0, 0, 0, 0, 0, 0};
-  
+  //public float[] vals = {0, 0, 0, 0, 0, 0, 0, 0};
+  ////////////////
   //GENES
   float xVelocity;
   float yVelocity;
@@ -30,10 +30,35 @@ class Canvas {
   float variationYPos;
   float variationXPos;
   
-  float[] genes = {xVelocity, yVelocity, deltaXVelocity, deltaYVelocity,
-                   variationXVelocity, variationYVelocity, brushLength, brushThickness,
-                   brushPressure, deltaBrushPressure, variationBrushPressure, xPos,
-                   yPos, deltaXPos, deltaYPos, variationYPos, variationXPos};
+  //XTRA
+  float changeAreaChance;
+  float changeAreaRange;
+  float changeVariantChance;
+  float changeVariantRange;
+  float resetCharacteristicChance;
+  float reverseXChance;
+  float reverseYChance;
+  float reverseDeltaPressureChance;
+  float reverseVariantChance;
+  
+  float offChance;
+  ////////////////
+  //GENES AS RANGES
+  float[] xVelocityRange;
+  float[] yVelocityRange;
+  float[] brushLengthRange;
+  float[] brushThicknessRange;
+  float[] brushPressureRange;
+  float[] deltaXPosRange;
+  float[] deltaYPosRange;
+  ////////////////
+  
+  float[] genes = {xVelocity, yVelocity, 
+                   deltaXVelocity, deltaYVelocity,
+                   variationXVelocity, variationYVelocity, 
+                   brushLength, brushThickness,
+                   brushPressure, deltaBrushPressure, variationBrushPressure, 
+                   xPos, yPos, deltaXPos, deltaYPos, variationYPos, variationXPos};
   
   //STORE VALUES
   float origXVelocity;
@@ -58,6 +83,11 @@ class Canvas {
   boolean reset = false;
   boolean restart = false;
   
+  
+  float randVal;
+  
+  
+  boolean offscreen = false;
   //bools for picking up and putting down brush
   boolean pressed = true;
   boolean move = false;
@@ -82,7 +112,7 @@ class Canvas {
   color c;
   float transparency = 100;
   
-  Canvas(float x, float y, int s, color c, float[] v,
+  Canvas(float x, float y, int s, color c,
          float xv, float yv, float dxv, float dyv, float vxv, float vyv,
          float bl, float bt, float bp, float dbp, float vbp, float xp,
          float yp, float dxp, float dyp, float vxp, float vyp) {
@@ -90,7 +120,7 @@ class Canvas {
     yCenter = y;
     sideLength = s;
     fillColor = c;
-    vals = v;
+    //vals = v;
     //brushRange = vals[6];
     //brushThickness = vals[6];
     
@@ -121,9 +151,9 @@ class Canvas {
   void display() {
     /* Draws the Canvas to the main window. */
     
-    
     body.beginDraw();
       // Not doing anything interesting graphically yet:
+      randVal = random(1);
       if(start || reset) {
         body.background(fillColor);
         start = false;
@@ -195,7 +225,6 @@ class Canvas {
           float dx = xPos - xpos;
           float dy = yPos - ypos;
           b.drag(dx, dy, xpos, ypos);
-
         }
       }
       xpos = xPos;
@@ -219,118 +248,64 @@ class Canvas {
       done = false;
     }
   }
-  
-  //method for advancing each frame
-  public void downRight() {
-    if (vals[1] >= sideLength) {
-      if (vals[0] >= sideLength) { 
-        done = true;
-        return;
-      }
-      vals[1] = 0;
-      vals[4] += vals[5];
-      vals[0] = vals[4] - vals[5];
-      pressed = true;
-      move = false;
-    }
-    else if (move) {
-      vals[0] = vals[4] - vals[5];
-      vals[1] += vals[5];
-      move = false;
-      pressed = true;
-    }
-    else {
-      vals[0] += vals[2];
-      vals[1] += vals[3];
-      if(vals[0] >= vals[4])
-        move = true;
-    }
-  }
-  
-  public void upLeft() {
-    if (vals[1] >= sideLength) {
-      if (vals[0] >= sideLength) { 
-        done = true;
-        return;
-      }
-      vals[1] = 0;
-      vals[4] += vals[5];
-      vals[0] += vals[5] * 2;
-      pressed = true;
-      move = false;
-    }
-    else if (move) {
-      vals[0] += vals[5];
-      vals[1] += vals[5] * 3;
-      move = false;
-      pressed = true;
-    }
-    else {
-      vals[0] -= vals[2];
-      vals[1] -= vals[3];
-      if(vals[0] <= vals[4] - vals[5])
-        move = true;
-    }
-  }
 
   void advance() {
+
     if(move) {
-      println(deltaXPos);
-      //println(xPos);
-      xPos = lastXPos;
-      yPos = lastYPos;
- 
-      xPos += deltaXPos;
-      yPos += deltaYPos;
       
-      deltaXPos += variationXPos;
-      deltaYPos += variationYPos;
-      
-      xVelocity = origXVelocity;
-      yVelocity = origYVelocity;
-      deltaXVelocity = origDeltaXVelocity;
-      deltaYVelocity = origDeltaYVelocity;
-      
-      brushPressure = origBrushPressure;
-      deltaBrushPressure = origDeltaBrushPressure;
-      
-      currentLength = 0;
+      if (offscreen) {
+        if(offChance < randVal) {
+          xPos = random(WIDTH);
+          yPos = random(HEIGHT);
+        }
+        else {
+          deltaXPos *= -1;
+          deltaYPos *= -1;
+        }
+        offscreen = false;
+      }
+      else {
+        xPos = lastXPos;
+        yPos = lastYPos;
+   
+        xPos += deltaXPos;
+        yPos += deltaYPos;
+        
+        deltaXPos += variationXPos;
+        deltaYPos += variationYPos;
+        
+        xVelocity = origXVelocity;
+        yVelocity = origYVelocity;
+        deltaXVelocity = origDeltaXVelocity;
+        deltaYVelocity = origDeltaYVelocity;
+        
+        brushPressure = origBrushPressure;
+        deltaBrushPressure = origDeltaBrushPressure;
+        
+        currentLength = 0;
+      }
       move = false;
       pressed = true;
-      
     }
     else {
       xPos += xVelocity;
       yPos += yVelocity;
-      xVelocity += deltaXVelocity;
-      yVelocity += deltaYVelocity;
-      deltaXVelocity += variationXVelocity;
-      deltaYVelocity += variationYVelocity;
-      brushPressure += deltaBrushPressure;
-      deltaBrushPressure += variationBrushPressure;
+      //xVelocity += deltaXVelocity;
+      //yVelocity += deltaYVelocity;
+      //deltaXVelocity += variationXVelocity;
+      //deltaYVelocity += variationYVelocity;
+      //brushPressure += deltaBrushPressure;
+      //deltaBrushPressure += variationBrushPressure;
       currentLength += sqrt(pow(xPos - xpos, 2) + pow(yPos - ypos, 2));
+      
       if (currentLength >= brushLength) {
         move = true;
       }
-    }
-  }
-  
-  //method for reproducing traits
-  float[] crossover(Canvas partner) {
-    float[] newGenes = new float[7];
-    for(int i = 0; i < 7; i++) {
-      
-      //random parent for each gene
-      float choice = random(1);
-      if (choice < .5)
-        newGenes[i] = vals[i];
+      if (xPos < 0 || xPos > WIDTH || yPos < 0 || yPos > HEIGHT)
+        offscreen = true;
       else
-        newGenes[i] = partner.vals[i];
+        offscreen = false;
     }
-    newGenes[0] = 0;
-    newGenes[1] = 0;
-    newGenes[4] = newGenes[5];
-    return newGenes;
   }
   
   float[] crossover2(Canvas partner) {
