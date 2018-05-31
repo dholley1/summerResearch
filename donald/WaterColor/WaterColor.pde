@@ -1,4 +1,4 @@
-int POPULATION = 10;
+int POPULATION = 100;
 int WIDTH = 200;
 int HEIGHT = 200;
 boolean START = false;

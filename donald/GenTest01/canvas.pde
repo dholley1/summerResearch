@@ -103,7 +103,7 @@ class Canvas {
   
   //color values for the paint
   color c;
-  float transparency = 100;
+  float transparency = 10;
   
   Canvas(float x, float y, int s, color c,
          float xv, float yv, float dxv, float dyv, float vxv, float vyv,
@@ -176,7 +176,7 @@ class Canvas {
       randVal = random(1);
       if(start || reset) {
         body.background(fillColor);
-        start = false;
+        //start = false;
       }
       update();
     body.endDraw();
@@ -196,7 +196,12 @@ class Canvas {
     if(!done) {
       
       //paint gets lighter during one stroke
-      transparency *= .95;
+      //transparency *= .95;
+      if(start) {
+        c = get((int)xPos, (int)yPos);
+        c = color(red(c), green(c), blue(c), transparency);
+        start = false;
+      }
       body.stroke(c);
       
       //increase or decrease radius of brush depending on speed
@@ -219,7 +224,7 @@ class Canvas {
         c = get((int)xPos, (int)yPos);
         
         //reset transparency
-        transparency = 100;
+        //transparency = 100;
         c = color(red(c), green(c), blue(c), transparency);
         
         //reset brush thickness
@@ -346,6 +351,7 @@ class Canvas {
       
       if (currentLength >= brushLength) {
         move = true;
+        currentLength = 0;
       }
       if (xPos < 0 || xPos > WIDTH || yPos < 0 || yPos > HEIGHT)
         offscreen = true;
@@ -406,7 +412,7 @@ class Canvas {
   }
   
   void reverseVariant(int index) {
-    float value = random(-.5, .5);
+    float value = random(-1, 1);
     if(index == 0)
       variationXVelocity = value;
     else if(index == 1)
