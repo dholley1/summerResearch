@@ -12,7 +12,7 @@ void setup() {
   size(1005, 603);
   background(50);
   rectMode(CENTER);
-  input = loadImage("flower.jpg");
+  input = loadImage("IMG_1166.jpg");
   image(input, 0, 0, 200, 200);
   for(int i = 0; i < POPULATION; i++) {
     //float deltaX = 10;//random(10, 40);

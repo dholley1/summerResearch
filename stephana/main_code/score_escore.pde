@@ -26,7 +26,6 @@ float score_painting(String filename) {
   //println(global, "pixel: ", scorePixel, " white: ", scoreWhite, " color: ",
   //        scoreColor, " alpha: ", scoreAlpha, " hue: ", scoreHue, " saturation: ",
   //        scoreSat, " final: ", finalScore);
-  println("here!", scoreBlack);
   
   global++;
   return finalScore;
