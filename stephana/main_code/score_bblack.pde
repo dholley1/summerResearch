@@ -78,7 +78,7 @@ float check_black() {
   //println("count: ", count, " count2: ", count2);
   float score = ((PICSIZE - count) / PICSIZE) * 100;
   //println(round(cw_scale(score)));
-  println("check blakc: ", score, " | ", cb_scale(score));
+  //println("check blakc: ", score, " | ", cb_scale(score));
   return cb_scale(score);
   //return(score);
 }
