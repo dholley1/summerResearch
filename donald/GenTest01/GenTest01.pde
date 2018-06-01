@@ -12,19 +12,20 @@ void setup() {
   size(1005, 603);
   background(50);
   rectMode(CENTER);
-  input = loadImage("flower.jpg");
+  input = loadImage("frog.jpg");
   image(input, 0, 0, 200, 200);
   for(int i = 0; i < POPULATION; i++) {
     allCanvases.add(new Canvas(100 + (i < 5 ? 201 * i : 201 * (i - 5)), 
                                301 + (i < 5 ? 0 : 201), 200, color(255),
                                
-                               random(-10, 10), random(-10, 10), random(-1, 1), random(-1, 1),
-                               random(-.5, .5), random(-.5, .5), random(1, 200), random(1, 20),
+                               random(-20, 20), random(-20, 20), random(-2, 2), random(-2, 2),
+                               random(-1, 1), random(-1, 1), random(1, 400), random(1, 40),
                                
                                1, 1, 1, //bp
                                
-                               random(0, WIDTH), random(0, HEIGHT), random(-20, 20),
-                               random(-20, 20), random(-.1, .1), random(-.1, .1)));
+                               random(0, WIDTH), random(0, HEIGHT), random(-40, 40),
+                               random(-40, 40), random(-1, 1), random(-1, 1),
+                               random(1), random(1), random(1), random(1), random(1), random(1)));
   }
 }
 
@@ -83,7 +84,7 @@ void draw() {
 
 
 void keyPressed() {
-  //save("../../screenShots/donaldScreenShot006.png");
+  //save("../../screenShots/donaldScreenShot010.png");
   for(Canvas c: allCanvases)
     c.done = true;
 }

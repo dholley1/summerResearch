@@ -1,3 +1,5 @@
+int GENECOUNT = 23;
+int[] VARIANTS = {4, 5, 10, 15, 16};
 class Canvas {
   /* A Canvas is a child window, independent of the rest. */
   
@@ -6,10 +8,6 @@ class Canvas {
   color fillColor;         // fill color of child window
   
   PGraphics body;          // the graphical body of the Canvas
-  
-  //0:mouseX, 1:mouseY, 2:dx, 3:dy, 4:brushLength, 
-  // 5:brushTarget 6:brushThickness 7:startingSpeed 
-  //public float[] vals = {0, 0, 0, 0, 0, 0, 0, 0};
   ////////////////
   //GENES
   float xVelocity;
@@ -32,13 +30,13 @@ class Canvas {
   
   //XTRA
   float changeAreaChance;
-  float changeAreaRange;
+  //float changeAreaRange;
   float changeVariantChance;
-  float changeVariantRange;
-  float resetCharacteristicChance;
+  //float changeVariantRange;
+  //float resetCharacteristicChance;
   float reverseXChance;
   float reverseYChance;
-  float reverseDeltaPressureChance;
+  //float reverseDeltaPressureChance;
   float reverseVariantChance;
   
   float offChance;
@@ -53,7 +51,7 @@ class Canvas {
   //float[] deltaYPosRange;
   ////////////////
   
-  float[] genes = new float[17];
+  float[] genes = new float[GENECOUNT];
   
   //STORE VALUES
   float origXVelocity;
@@ -105,12 +103,13 @@ class Canvas {
   
   //color values for the paint
   color c;
-  float transparency = 100;
+  float transparency = 10;
   
   Canvas(float x, float y, int s, color c,
          float xv, float yv, float dxv, float dyv, float vxv, float vyv,
          float bl, float bt, float bp, float dbp, float vbp, float xp,
-         float yp, float dxp, float dyp, float vxp, float vyp) {
+         float yp, float dxp, float dyp, float vxp, float vyp, float off,
+         float cac, float cvc, float rxc, float ryc, float rvc) {
     xCenter = x;
     yCenter = y;
     sideLength = s;
@@ -133,6 +132,12 @@ class Canvas {
     deltaYPos = origDeltaYPos = dyp;
     variationXPos = vxp;
     variationYPos = vyp;
+    offChance = off;
+    changeAreaChance = cac;
+    changeVariantChance = cvc;
+    reverseXChance = rxc;
+    reverseYChance = ryc;
+    reverseVariantChance = rvc;
     
     genes[0] = xVelocity;
     genes[1] = yVelocity;
@@ -151,6 +156,12 @@ class Canvas {
     genes[14] = deltaYPos;
     genes[15] = variationYPos;
     genes[16] = variationXPos;
+    genes[17] = offChance;
+    genes[18] = changeAreaChance;
+    genes[19] = changeVariantChance;
+    genes[20] = reverseXChance;
+    genes[21] = reverseYChance;
+    genes[22] = reverseVariantChance;
     
     body = createGraphics(sideLength, sideLength);
     for(int i = 0; i < 400; i ++)
@@ -165,7 +176,7 @@ class Canvas {
       randVal = random(1);
       if(start || reset) {
         body.background(fillColor);
-        start = false;
+        //start = false;
       }
       update();
     body.endDraw();
@@ -185,7 +196,12 @@ class Canvas {
     if(!done) {
       
       //paint gets lighter during one stroke
-      transparency *= .95;
+      //transparency *= .95;
+      if(start) {
+        c = get((int)xPos, (int)yPos);
+        c = color(red(c), green(c), blue(c), transparency);
+        start = false;
+      }
       body.stroke(c);
       
       //increase or decrease radius of brush depending on speed
@@ -208,7 +224,7 @@ class Canvas {
         c = get((int)xPos, (int)yPos);
         
         //reset transparency
-        transparency = 100;
+        //transparency = 100;
         c = color(red(c), green(c), blue(c), transparency);
         
         //reset brush thickness
@@ -261,7 +277,7 @@ class Canvas {
     if(move) {
       
       if (offscreen) {
-        if(offChance < randVal) {
+        if(offChance > randVal) {
           xPos = random(WIDTH);
           yPos = random(HEIGHT);
         }
@@ -277,6 +293,29 @@ class Canvas {
    
         xPos += deltaXPos;
         yPos += deltaYPos;
+      }
+      if (changeAreaChance > randVal) {
+        xPos = random(WIDTH);
+        yPos = random(HEIGHT);
+      }
+      //if (changeAreaRange > randVal) {
+      //}
+      if (changeVariantChance > randVal) {
+        //genes[VARIANTS[int(randVal * 5)]] = random(-.5, .5);
+        changeVariant(int(randVal * 5));
+      }
+      //if(changeVariantRange > randVal) {
+      //  
+      //}
+      //if(resetCharacteristicChance > randVal) {
+      //  
+      //}
+      //if(reverseDeltaPressureChance > randVal) {
+      //  
+      //}
+      if(reverseVariantChance > randVal) {
+        //genes[VARIANTS[int(randVal * 5)]] *= -1;
+        reverseVariant(int(randVal * 5));
       }
       deltaXPos += variationXPos;
       deltaYPos += variationYPos;
@@ -294,6 +333,12 @@ class Canvas {
       pressed = true;
     }
     else {
+      if(reverseXChance > randVal) {
+        xVelocity *= -1;
+      }
+      if(reverseYChance > randVal) {
+        yVelocity *= -1;
+      }
       xPos += xVelocity;
       yPos += yVelocity;
       xVelocity += deltaXVelocity;
@@ -306,6 +351,7 @@ class Canvas {
       
       if (currentLength >= brushLength) {
         move = true;
+        currentLength = 0;
       }
       if (xPos < 0 || xPos > WIDTH || yPos < 0 || yPos > HEIGHT)
         offscreen = true;
@@ -315,8 +361,8 @@ class Canvas {
   }
   
   float[] crossover(Canvas partner) {
-    float[] newGenes = new float[17];
-    for(int i = 0; i < 17; i++) {
+    float[] newGenes = new float[GENECOUNT];
+    for(int i = 0; i < GENECOUNT; i++) {
       float choice = random(1);
       if (choice < .5)
         newGenes[i] = genes[i];
@@ -344,6 +390,39 @@ class Canvas {
     deltaYPos = genes[14];
     variationYPos = genes[15];
     variationXPos = genes[16];
+    offChance = genes[17];
+    changeAreaChance = genes[18];
+    changeVariantChance = genes[19];
+    reverseXChance = genes[20];
+    reverseYChance = genes[21];
+    reverseVariantChance = genes[22];
+  }
+  
+  void changeVariant(int index) {
+    if(index == 0)
+      variationXVelocity *= -1;
+    else if(index == 1)
+      variationYVelocity *= -1;
+    else if(index == 2)
+      variationBrushPressure *= -1;
+    else if(index == 3)
+      variationYPos *= -1;
+    else
+      variationXPos *= -1;
+  }
+  
+  void reverseVariant(int index) {
+    float value = random(-1, 1);
+    if(index == 0)
+      variationXVelocity = value;
+    else if(index == 1)
+      variationYVelocity = value;
+    else if(index == 2)
+      variationBrushPressure = value;
+    else if(index == 3)
+      variationYPos = value;
+    else
+      variationXPos = value;
   }
   
   void saveImage(String name) {
