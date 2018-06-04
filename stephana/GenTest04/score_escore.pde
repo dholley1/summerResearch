@@ -1,7 +1,8 @@
 // this is where all scoring tests are being merged
 
-
 int global = 0;
+
+//PrintWriter output = createWriter("score_record.txt");
 
 // RUN ALL THE SCORING TESTS
 float score_painting(String filename) {
@@ -22,7 +23,8 @@ float score_painting(String filename) {
   check_black();
 
   float finalScore = round(scorePixel*0.3 + scoreWhite*0.3 + scoreColor*0.2 + scoreAlpha*0 + scoreHue*0.05 + scoreSat*0.05 + scoreBlack*0.1);
-  println(global, "| pixel: ", scorePixel, " white: ", scoreWhite, " color: ", scoreColor, " alpha: ", scoreAlpha, " hue: ", scoreHue, " saturation: ", scoreSat, " black: ", scoreBlack, " final: ", finalScore);
+  String printhis = global + "| pixel: " + scorePixel + " white: " + scoreWhite + " color: " + scoreColor + " alpha: " + scoreAlpha + " hue: " + scoreHue + " saturation: " + scoreSat + " black: " + scoreBlack + " final: " + finalScore;
+  println(printhis);
   
   global++;
   return finalScore;
