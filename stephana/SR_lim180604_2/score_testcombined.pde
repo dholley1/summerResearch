@@ -33,10 +33,10 @@ float pixel_color() {
   float score = ((total_diff / PICSIZE)/255) * 100;
   if (score <= min) min = score;
   if (score >= max) max = score;
-  return plzworkmycurvychild(score);
+  return pixelcolorscale(score);
 }
 
-float plzworkmycurvychild(float d) {
+float pixelcolorscale(float d) {
   // take min max and divide into ten and use that to see where s belongs
   float range = max - min;
 
