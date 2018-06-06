@@ -19,8 +19,8 @@ void draw() {
   /* Put two colors side by side in the window, with the second color's blue value
      sensitive to the vertical mouse location: */
      
-  color c1 = color(255, 100, 127);      // a fixed color
-  color c2 = color(255, 100, mouseY);   // a color that varies by blue
+  color c1 = color(200, 100, 127);      // a fixed color
+  color c2 = color(200, 100, mouseY);   // a color that varies by blue
   
   // Make the rectangles:
   fill(c1);
