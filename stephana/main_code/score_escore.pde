@@ -12,21 +12,17 @@ float score_painting(String filename) {
   input.loadPixels();
   result.loadPixels();
   
-  float scorePixel = round(pixel_color());
-  float scoreWhite = round(check_white());
-  float scoreColor = round(color_variation());
-  float scoreAlpha = round(alpha_check());
-  float scoreHue = round(hue_check());
-  float scoreSat = round(sat_check());
-  float scoreBlack = round(check_black());
+  float scorePixel = round(pixel_color());     // 30%
+  float scoreWhite = round(check_white());     // 30%
+  float scoreColor = round(color_variation()); // 20%
+  float scoreAlpha = round(alpha_check());     // 0%
+  float scoreHue = round(hue_check());         // 5%
+  float scoreSat = round(sat_check());         // 5%
+  float scoreBlack = round(check_black());     // 10%
   check_black();
 
-  float finalScore = round(scorePixel*0.3 + scoreWhite*0.3 + scoreColor*0.2
-                           + scoreAlpha*0.05 + scoreHue*0.05 + scoreSat*0.1);
-  //println(global, "pixel: ", scorePixel, " white: ", scoreWhite, " color: ",
-  //        scoreColor, " alpha: ", scoreAlpha, " hue: ", scoreHue, " saturation: ",
-  //        scoreSat, " final: ", finalScore);
-  println("here!", scoreBlack);
+  float finalScore = round(scorePixel*0.3 + scoreWhite*0.3 + scoreColor*0.2 + scoreAlpha*0 + scoreHue*0.05 + scoreSat*0.05 + scoreBlack*0.1);
+  println(global, "| pixel: ", scorePixel, " white: ", scoreWhite, " color: ", scoreColor, " alpha: ", scoreAlpha, " hue: ", scoreHue, " saturation: ", scoreSat, " black: ", scoreBlack, " final: ", finalScore);
   
   global++;
   return finalScore;
