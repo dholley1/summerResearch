@@ -1,3 +1,7 @@
+/*
+180606 main program
+*/
+
 int POPULATION = 10;
 int WIDTH = 200;
 int HEIGHT = 200;

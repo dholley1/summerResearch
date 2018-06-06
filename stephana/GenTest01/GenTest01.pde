@@ -12,21 +12,20 @@ void setup() {
   size(1005, 603);
   background(50);
   rectMode(CENTER);
-  input = loadImage("IMG_1166.jpg");
+  input = loadImage("frog.jpg");
   image(input, 0, 0, 200, 200);
   for(int i = 0; i < POPULATION; i++) {
-    //float deltaX = 10;//random(10, 40);
-    //float[] vs = {0, 0, 20/*random(5, 20)*/, 20/*random(5, 20)*/, deltaX, deltaX, 5/*random(5, 40)*/};
     allCanvases.add(new Canvas(100 + (i < 5 ? 201 * i : 201 * (i - 5)), 
                                301 + (i < 5 ? 0 : 201), 200, color(255),
                                
-                               random(-5, 5), random(-5, 5), random(-1, 1), random(-1, 1) ,
-                               random(-.1, .1), random(-.1, .1), random(1, 100), random(5, 10),
+                               random(-20, 20), random(-20, 20), random(-2, 2), random(-2, 2),
+                               random(-1, 1), random(-1, 1), random(1, 400), random(1, 40),
                                
                                1, 1, 1, //bp
                                
-                               random(0, WIDTH), random(0, HEIGHT), random(-20, 20),
-                               random(-20, 20), random(-.1, .1), random(-.1, .1)));
+                               random(0, WIDTH), random(0, HEIGHT), random(-40, 40),
+                               random(-40, 40), random(-1, 1), random(-1, 1),
+                               random(1), random(1), random(1), random(1), random(1), random(1)));
   }
 }
 
@@ -61,20 +60,19 @@ void draw() {
         PAINTING++;
       }
       
-      createGraph();
-
       //loop for creating offspring
       for(int i = 0; i < POPULATION; i++) {
         allCanvases.get(i).reset = true;
         int[] sel = selection();
         Canvas parent = allCanvases.get(sel[0]);
         Canvas partner = allCanvases.get(sel[1]);
-        genes[i] = parent.crossover2(partner);
+        genes[i] = parent.crossover(partner);
       }
       
       //loop for assigning new genes
       for(int i = 0; i < POPULATION; i++) {
         allCanvases.get(i).genes = genes[i];
+        allCanvases.get(i).assignGenes();
         allCanvases.get(i).pressed = true;
       }
     }
@@ -86,7 +84,7 @@ void draw() {
 
 
 void keyPressed() {
-  save("screenshoooot.jpg");
+  //save("../../screenShots/donaldScreenShot010.png");
   for(Canvas c: allCanvases)
     c.done = true;
 }
