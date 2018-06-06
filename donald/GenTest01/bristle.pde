@@ -30,6 +30,10 @@ class bristle {
                                    : (y - ypos) / div * (speed + 1);
     float newx = xpos + dx + random(lowXFactor, highXFactor) + xchange;
     float newy = ypos + dy + random(lowYFactor, highYFactor) + ychange;
+    if (abs(x - newx) > 20)
+      newx -= xchange;
+    if (abs(y - newy) > 20)
+      newy -= ychange;
     canvas.line(xpos, ypos, newx, newy);
     xpos = newx;
     ypos = newy;

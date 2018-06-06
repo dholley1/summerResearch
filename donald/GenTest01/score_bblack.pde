@@ -1,4 +1,4 @@
-float cw_scale(float d) {
+float c_scale(float d) {
   if (d < 50) return 0;
   else if (d < 53) return 5;
   else if (d < 55) return 10;
@@ -22,30 +22,34 @@ float cw_scale(float d) {
   else return 100;
 }
 
-float check_white() {
+float check_black() {
   
   float count = 0;
+  float count2 = 0;
   
   for (int i=0; i<PICSIZE; i++) {
     
     // get the color of the pixel
     color c = result.pixels[i];
+    //println(red(c), green(c), blue(c));
     
     // if the pixel is white
-    if (red(c)==255 && green(c)==255 && blue(c)==255) {
+    if (red(c)<=150 && green(c)<=150 && blue(c)<=150) {
+      count++;
 
       // and if the orig isn't white, it means the painting is different from the orig
       if (input.pixels[i] != result.pixels[i]) { // random white space
-        count++;
+        count2++;
+        //println(red(c), green(c), blue(c));
       }
     };
   }
   
   // count is the count of wrongly placed white pixels
   // PICSIZE - count is the properly placed pixels
-  //println("count: ", count);
+  //println("count: ", count, " count2: ", count2);
   float score = ((PICSIZE - count) / PICSIZE) * 100;
   //println(round(cw_scale(score)));
-  
-  return cw_scale(score);
+  //return cb_scale(score);
+  return(score);
 }

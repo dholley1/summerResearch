@@ -20,20 +20,21 @@ class Leak {
   }
   
   void spread() {
-    for(int i = 0; i < 2; i++) {
+    for(int i = 0; i < 10; i++) {
       float angle = random(0, 2*PI);
-      float dx = cos(angle) * random(0, 20);
-      float dy = sin(angle) * random(0, 20);
+      float dx = cos(angle) * random(0, 10);
+      float dy = sin(angle) * random(0, 10);
       line(xpos, ypos, xpos + dx, ypos + dy);
+      //ellipse(xpos, ypos, 1 / (dx + .1), 1 / (dy + .1));
       leaks.add(new Leak(xpos + dx, ypos + dy, val - 1));
     }
     done = true;
   }
   
-  //void addTo() {
-    //for(Leak l: leaks) {
-      //LEAKS.add(l);
-    //}
-    //leaks.clear();
-  //}
+  void addTo() {
+    for(Leak l: leaks) {
+      LEAKS.add(l);
+    }
+    leaks.clear();
+  }
 }

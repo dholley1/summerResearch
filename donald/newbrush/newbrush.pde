@@ -8,19 +8,18 @@ float transparency = 100;
 color c = color(100, 200, 50, 100);
 
 ArrayList<bristle> bristles = new ArrayList<bristle>();
-//ArrayList<Leak> LEAKS = new ArrayList<Leak>();
+ArrayList<Leak> LEAKS = new ArrayList<Leak>();
 
 void setup() {
   size(500, 500);
   background(255);
   stroke(c);
   fill(c);
-  for(int i = 0; i < 400; i ++)
+  for(int i = 0; i < 100; i ++)
     bristles.add(new bristle());
 }
 
 void draw() {
-  //transparency *= .99;
   c = color(100, 200,  50, transparency);
   stroke(c);
   fill(c);
@@ -33,6 +32,9 @@ void draw() {
       float dy = mouseY - ypos;
       b.drag(dx, dy, xpos, ypos);
     }
+    //float rand = random(1);
+    //if(rand > .9)
+      //LEAKS.add(new Leak(mouseX, mouseY));
   }
   else if(pressed) {
     //executes if the mouse has just been pressed
@@ -43,6 +45,7 @@ void draw() {
     }   
     active = true;
   }
+  for(Leak l: LEAKS) l.spread();
   xpos = mouseX;
   ypos = mouseY;
 }

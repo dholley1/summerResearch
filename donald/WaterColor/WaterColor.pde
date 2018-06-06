@@ -12,7 +12,7 @@ void setup() {
   size(1005, 603);
   background(50);
   rectMode(CENTER);
-  input = loadImage("flower.jpg");
+  input = loadImage("jumpyFrog.jpg");
   image(input, 0, 0, 200, 200);
   for(int i = 0; i < POPULATION; i++) {
     allCanvases.add(new Canvas(100 + (i < 5 ? 201 * i : 201 * (i - 5)), 
@@ -84,7 +84,7 @@ void draw() {
 
 
 void keyPressed() {
-  save("../../screenShots/donaldScreenShot008.png");
-  //for(Canvas c: allCanvases)
-    //c.done = true;
+  //save("../../screenShots/donaldScreenShot008.png");
+  for(Canvas c: allCanvases)
+    c.done = true;
 }
