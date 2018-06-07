@@ -1,3 +1,10 @@
+import java.io.*;
+import java.lang.*;
+import java.util.*;
+int GENECOUNT = 28;
+int NUM = 0;
+float[] SCORES;
+
 int POPULATION = 10;
 int WIDTH = 200;
 int HEIGHT = 200;
@@ -6,7 +13,7 @@ ArrayList<Canvas> allCanvases = new ArrayList<Canvas>();
 PImage input;
 static int PAINTING = 0;
 static int GEN = 0;
-float[][] genes = new float[POPULATION][];
+float[][] genes = new float[POPULATION][GENECOUNT];
 
 void setup() {
   size(1005, 603);
@@ -18,14 +25,16 @@ void setup() {
     allCanvases.add(new Canvas(100 + (i < 5 ? 201 * i : 201 * (i - 5)), 
                                301 + (i < 5 ? 0 : 201), 200, color(255),
                                
-                               random(-20, 20), random(-20, 20), random(-2, 2), random(-2, 2),
-                               random(-1, 1), random(-1, 1), random(1, 400), random(1, 40),
+                               random(-3, 3), random(-3, 3), random(-1, 1), random(-1, 1),
+                               random(-.5, .5), random(-.5, .5), random(1, 50), 10.0,
                                
                                1, 1, 1, //bp
                                
-                               random(0, WIDTH), random(0, HEIGHT), random(-40, 40),
-                               random(-40, 40), random(-1, 1), random(-1, 1),
-                               random(1), random(1), random(1), random(1), random(1), random(1)));
+                               random(0, WIDTH), random(0, HEIGHT), random(-20, 20),
+                               random(-20, 20), random(-.5, .5), random(-.5, .5),
+                               random(1), random(1), random(1), random(1), random(1), random(1),
+                               random(-5, 5), random(-5, 5), random(1, 10), random(1, 10),
+                               random(50, 400)));
   }
 }
 
@@ -59,7 +68,7 @@ void draw() {
         c.saveImage("data/"+Integer.toString(PAINTING)+".png");
         PAINTING++;
       }
-      
+      createGraph();
       //loop for creating offspring
       for(int i = 0; i < POPULATION; i++) {
         allCanvases.get(i).reset = true;
@@ -84,7 +93,40 @@ void draw() {
 
 
 void keyPressed() {
-  //save("../../screenShots/donaldScreenShot010.png");
-  for(Canvas c: allCanvases)
-    c.done = true;
+  //save("../../../../../../Volumes/dholley/test.png");
+  try {
+    Formatter newFile = new Formatter(
+      "../../../../../../Volumes/dholley/summer/data/scores" + 
+      Integer.toString(NUM) + ".txt");
+    for(int i = 0; i < POPULATION; i++) {
+      for(int j = 0; j < GENECOUNT; j++) {
+        newFile.format(Float.toString(genes[i][j]) + " ");
+        if(j % 5 == 4) newFile.format("\n");
+      }
+      
+      newFile.format("\n" + SCORES[i] + "\n\n");
+      
+    }
+    newFile.close();
+  }
+  catch(Exception e){
+    System.out.println("no file");
+  }
+  try {
+    Scanner oldFile = new Scanner(new File(
+      "../../../../../../Volumes/dholley/summer/data/scores" + 
+      Integer.toString(NUM) + ".txt"));
+    while(oldFile.hasNext()) {
+      String a = oldFile.next();
+      println(a);
+    }
+    oldFile.close();
+  }
+  catch(Exception e){
+    System.out.println("no file");
+  }
+  
+  
+  //for(Canvas c: allCanvases)
+    //c.done = true;
 }

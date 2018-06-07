@@ -1,7 +1,11 @@
-int GENECOUNT = 23;
+
+
+//int GENECOUNT = 28;
 int[] VARIANTS = {4, 5, 10, 15, 16};
 class Canvas {
   /* A Canvas is a child window, independent of the rest. */
+  
+  
   
   float xCenter, yCenter;  // center coordinates of child window
   int sideLength;          // side length of child window
@@ -28,6 +32,10 @@ class Canvas {
   float variationYPos;
   float variationXPos;
   
+  
+  float offChance;
+    
+    
   //XTRA
   float changeAreaChance;
   //float changeAreaRange;
@@ -39,7 +47,13 @@ class Canvas {
   //float reverseDeltaPressureChance;
   float reverseVariantChance;
   
-  float offChance;
+  float offXColor;
+  float offYColor;
+  float xRangeColor;
+  float yRangeColor;
+  
+  
+  float colorDifferenceThresh;
   ////////////////
   //GENES AS RANGES
   //float[] xVelocityRange;
@@ -96,20 +110,35 @@ class Canvas {
   float brushVelocity = 0;
   float brushRange;
   //float brushThickness;
+  
 
   //x and y position of the brush at its last position
   float xpos = 0;
   float ypos = 0;
   
   //color values for the paint
+  color targetc;
+  
   color c;
-  float transparency = 10;
+  float transparency = 20;
+  
+  
+  int strokes = 0;
+  
+  
+  
+  
+  
+  
+  
+  
   
   Canvas(float x, float y, int s, color c,
          float xv, float yv, float dxv, float dyv, float vxv, float vyv,
          float bl, float bt, float bp, float dbp, float vbp, float xp,
          float yp, float dxp, float dyp, float vxp, float vyp, float off,
-         float cac, float cvc, float rxc, float ryc, float rvc) {
+         float cac, float cvc, float rxc, float ryc, float rvc,
+         float oxc, float oyc, float xrc, float yrc, float cdt) {
     xCenter = x;
     yCenter = y;
     sideLength = s;
@@ -138,6 +167,11 @@ class Canvas {
     reverseXChance = rxc;
     reverseYChance = ryc;
     reverseVariantChance = rvc;
+    offXColor = oxc;
+    offYColor = oyc;
+    xRangeColor = xrc;
+    yRangeColor = yrc;
+    colorDifferenceThresh = cdt;
     
     genes[0] = xVelocity;
     genes[1] = yVelocity;
@@ -162,11 +196,22 @@ class Canvas {
     genes[20] = reverseXChance;
     genes[21] = reverseYChance;
     genes[22] = reverseVariantChance;
+    genes[23] = offXColor;
+    genes[24] = offYColor;
+    genes[25] = xRangeColor;
+    genes[26] = yRangeColor;
+    genes[27] = colorDifferenceThresh;
     
     body = createGraphics(sideLength, sideLength);
     for(int i = 0; i < 400; i ++)
       bristles.add(new bristle(body));
   }
+  
+  
+  
+  
+  
+  
 
   void display() {
     /* Draws the Canvas to the main window. */
@@ -198,30 +243,30 @@ class Canvas {
       //paint gets lighter during one stroke
       //transparency *= .95;
       if(start) {
-        c = get((int)xPos, (int)yPos);
+        //c = get((int)xPos, (int)yPos);
+        c = averageColor(xPos + (int)offXColor, 
+                         yPos + (int)offYColor, 
+                         xPos + (int)offXColor + (int)xRangeColor, 
+                         yPos + (int)offYColor + (int)yRangeColor);
         c = color(red(c), green(c), blue(c), transparency);
         start = false;
       }
       body.stroke(c);
-      
-      //increase or decrease radius of brush depending on speed
-      //if(brushVelocity >= 5)
-       // brushRange *= .9;
-      //else {
-       // brushRange *= 1.1;
-        //if(brushRange > 20)
-         // brushRange = 20;
-      //}
-      
+
       //in case the brush was picked up
       if(pressed) {
-        
+        strokes++;
         lastXPos = xPos;
         lastYPos = yPos;
         
         //get new location color
         //c = picture.get((int)vals[0], (int)vals[1]);
-        c = get((int)xPos, (int)yPos);
+        
+        //c = get((int)xPos, (int)yPos);
+        c = averageColor(xPos + offXColor, 
+                         yPos + offYColor, 
+                         xPos + offXColor + xRangeColor, 
+                         yPos + offYColor + yRangeColor);
         
         //reset transparency
         //transparency = 100;
@@ -240,10 +285,16 @@ class Canvas {
         }
       }
       
+      
+      
       //if brush is dragging
       else {
         //update transparency
         c = color(red(c), green(c), blue(c), transparency);
+        
+        targetc = get((int)xPos, (int)yPos);
+        if (colorDifference(c, targetc) > colorDifferenceThresh) {xVelocity *= -1; yVelocity *= -1;}
+        
         
         //drag each bristle to new random location
         float dx = xPos - xpos;
@@ -256,6 +307,10 @@ class Canvas {
       ypos = yPos;
       //advaces the brush by dx and dy, or puts the brush at a new location
       advance();
+    }
+    if(strokes == 500) {
+      done = true;
+      strokes = 0;
     }
     //after painting is done and saved, reset to all white
     if(reset){
@@ -372,6 +427,28 @@ class Canvas {
     return newGenes;
   }
   
+  void mutate() {
+    if(true) {
+      float value;
+      int choice = int(random(GENECOUNT));
+      if(choice < 2) value = random(-3, 3);
+      else if(choice < 4) value = random(-1, 1);
+      else if(choice < 6) value = random(-.5, .5);
+      else if(choice == 6) value = random(1, 100);
+      else if(choice == 7) value = random(1, 20);
+      else if(choice < 11) value = 1;
+      else if(choice == 11) value = random(0, WIDTH);
+      else if(choice == 12) value = random(0, HEIGHT);
+      else if(choice < 15) value = random(-20, 20);
+      else if(choice < 17) value = random(-5, 5);
+      else if(choice < 23) value = random(1);
+      else if(choice < 25) value = random(-5, 5);
+      else if(choice < 27) value = random(1, 10);
+      else value = random(50, 100);
+      genes[choice] = value;
+    }
+  }
+  
   void assignGenes() {
     xVelocity = genes[0];
     yVelocity = genes[1];
@@ -396,6 +473,11 @@ class Canvas {
     reverseXChance = genes[20];
     reverseYChance = genes[21];
     reverseVariantChance = genes[22];
+    offXColor = genes[23];
+    offYColor = genes[24];
+    xRangeColor = genes[25];
+    yRangeColor = genes[26];
+    colorDifferenceThresh = genes[27];
   }
   
   void changeVariant(int index) {
@@ -423,6 +505,25 @@ class Canvas {
       variationYPos = value;
     else
       variationXPos = value;
+  }
+  
+  color averageColor(float startX, float startY, float endX, float endY) {
+    int totalRed = 0;
+    int totalGreen = 0;
+    int totalBlue = 0;
+    for(int i = 0; i < endX - startX; i++) {
+      for(int j = 0; j < endY - startY; j++) {
+        totalRed += red(get(int(i + startX), j + int(startY)));
+        totalGreen += green(get(int(i + startX), int(j + startY)));
+        totalBlue += blue(get(int(i + startX), int(j + startY)));
+      }
+    }
+    int total = int(xRangeColor) * int(yRangeColor);
+    return color(totalRed / total, totalGreen / total, totalBlue / total);
+  }
+  
+  int colorDifference(color c1, color c2) {
+    return int(abs(red(c1) - red(c2)) + abs(green(c1) - green(c2)) + abs(blue(c1) - blue(c2)));
   }
   
   void saveImage(String name) {
