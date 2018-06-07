@@ -32,7 +32,7 @@ void mousePressed() {
    color finalCol = get(mouseX, mouseY);
    
                          // Attributes to play with:
-   int numTrials = 10;    // the number of pixels chosen from the neighborhood
+   int numTrials = 3;    // the number of pixels chosen from the neighborhood
    int nbhdRadius = 50;  // the radius of the neighborhood
    int threshold = 4;    // maximum LAB distance that we will allow as we search
 
