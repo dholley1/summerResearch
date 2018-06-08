@@ -13,7 +13,7 @@ void setup() {
   size(1200, 400);
   background(255);
   
-  originalImage = loadImage("landscape.jpg");
+  originalImage = loadImage("portrait.jpg");
   image(originalImage, 0, 0);
 }
 
@@ -52,7 +52,7 @@ class Brush {
   
   PShape parent = createShape(GROUP);
 
-  int brushRad = (int) random(10, 15);   // initial radius of brush
+  int brushRad = (int) random(3, 5);     // initial radius of brush
   int numLayers = (int) random(5, 9);    // number of layers that comprise each brush
   int numVerts[];                        // each layer has a different number of vertices
   
@@ -100,7 +100,7 @@ class Brush {
     
     float xNow = x;
     float yNow = y;
-    for (int squiggle = 0; squiggle < 10; squiggle++) {
+    for (int squiggle = 0; squiggle < 3; squiggle++) {
       shape(this.parent, xNow, yNow);
       xNow += random(-3, 3);
       yNow += random(-3, 3);
