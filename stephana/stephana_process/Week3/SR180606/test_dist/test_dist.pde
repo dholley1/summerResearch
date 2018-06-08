@@ -15,8 +15,10 @@ void setup() {
 
 void draw() {
   image(die, 0, 0, dwidth, dheight);
-  color c1 = get(100, 120);
-  color c2 = get(100, 121);
+  //color c1 = get(100, 120);
+  //color c2 = get(100, 121);
+  color c1 = get(110, 120);
+  color c2 = get(110, 121);
   println("distance:", findDist(c1, c2));
   noStroke();
   fill(c1);

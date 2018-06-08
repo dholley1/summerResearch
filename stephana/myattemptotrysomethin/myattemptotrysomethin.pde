@@ -16,6 +16,7 @@ void setup() {
 
 void draw() {
   image(die, 0, 0, dwidth, dheight);
+  getLength(start, direction)
 }
 
 class tuple {
