@@ -1,16 +1,11 @@
-/* Edge detecting. */
+/* Edge detecting plus watercolor painting. */
 
-// Mess with these variables:
+PImage originalImage;  // the image that we are analyzing
 
-String fileName = "frog1.png";
-
-float powerMod = 3;    // an exponent used in assigning whiteness to a pixel
 int discRad = 2;       // the radius of the disc neighborhood for each pixel
 int numChecks = 8;     // the number of pixel pairs to check for each 180 degree rotation
 
-// Don't mess with these variables:
-
-PImage originalImage;  // the image that we are analyzing
+int xPt, yPt;          // for choosing a random point to paint
 
 boolean oneClicked = false;     // true: when the mouse has been clicked on a first pixel
 color firstColor, secondColor;  // stores the two clicked pixels' colors
@@ -18,19 +13,86 @@ color firstColor, secondColor;  // stores the two clicked pixels' colors
 void setup() {
   size(400, 200);
   ellipseMode(CENTER);
-  background(0);
   
   colorMode(RGB, 100); // sets the RGB scale to 0-100 (rather than 0-255)
+  background(100);
   
   // Put the original image on the left side of the window:
-  originalImage = loadImage(fileName);
+  originalImage = loadImage("mountain.jpg");
   image(originalImage, 0, 0);
 }
 
 void draw() {
   
   noLoop();
+  
+  // Paint a bunch of random points:
+  for (int ctr = 0; ctr < 1000; ctr++) {
+  
+    // Paint a random point:
+    xPt = (int) random(width);
+    yPt = (int) random(height);
+  
+    Brush b = new Brush(get(xPt, yPt));
+    b.display(xPt + width/2, yPt);
+    
+  }
+  
   analyzeImage(originalImage);
+  
+}
+
+void mousePressed() {
+  ///* Check on a specific pixel. */
+  
+  //// Grab the probability that a pixel is on an edge:
+  //int edgeProb = (int) pixelCheck(mouseX, mouseY);
+  
+  //// Color the associated pixel (on the right) with a grayscale version of that probability:
+  //stroke(edgeProb);
+  //point(mouseX + width/2, mouseY);
+  
+  //// For debugging:
+  //println(edgeProb);
+  
+  //// Mark the clicked spot:
+  //fill(50);
+  //ellipse(mouseX, mouseY, 20, 20);
+  //ellipse(mouseX + width/2, mouseY, 20, 20);
+  
+  // Alternative: Print the LAB colors of two clicked pixels, as well as their LAB distance:
+  
+  //if ( oneClicked == false ) {
+  //  // then this is the first pixel clicked:
+  //  firstColor = get(mouseX, mouseY);
+  //  oneClicked = true;
+  //} else {
+  //  // else this is the second pixel clicked:
+  //  secondColor = get(mouseX, mouseY);
+  //  oneClicked = false;
+    
+  //  // Convert those colors to LAB values:
+  //  float[] c0_LAB = RGB2LAB(red(firstColor), green(firstColor), blue(firstColor));
+  //  float[] c1_LAB = RGB2LAB(red(secondColor), green(secondColor), blue(secondColor));
+    
+  //  println(c0_LAB);
+  //  println(c1_LAB);
+    
+  //  // Grab the LAB distance between those colors:
+  //  float distance = findDist(color((int) c0_LAB[0], (int) c0_LAB[1], (int) c0_LAB[2]),
+  //                            color((int) c1_LAB[0], (int) c1_LAB[1], (int) c1_LAB[2])
+  //                           );
+    
+  //  println(distance);
+  //  println();
+    
+  //  fill(firstColor);
+  //  rect(width/2, 0, width/4, height);
+    
+  //  fill(secondColor);
+  //  rect(width - width/4, 0, width/4, height);
+    
+  //}
   
 }
 
@@ -49,11 +111,15 @@ void analyzeImage(PImage img) {
       int edgeProb = (int) pixelCheck(i, j);
       
       // Color the associated pixel (on the right) with a grayscale version of that probability:
-      
-      float edgeProbAdj = constrain(pow(edgeProb, powerMod), 0, 100);  // tweak the probability
-      stroke(edgeProbAdj);
-      point(i + width/2, j);
-      
+      //int edgeProbAdj = (edgeProb > 15) ? 100 : 0;
+      //float edgeProbAdj = constrain(100 - pow(edgeProb, 2), 0, 100);
+      //stroke(pow(edgeProb, 4));
+      float edgeProbAdj = 100 - pow(edgeProb, 3);
+      if ( edgeProbAdj < 90 ) {
+        //stroke(edgeProbAdj);
+        stroke(50);
+        point(i + width/2, j);
+      }
     }
   }
 }
@@ -95,6 +161,9 @@ int pixelCheck(int i, int j) {
     // Increment the angle so that we can perform a new gradient check:
     theta += PI / numChecks;
     
+    // For debugging:
+    //println("total distance / theta", diffCounter, theta);
+  
   }
   
   // Take (and return) the average of the pairwise distances:
@@ -236,4 +305,66 @@ public float[] LAB2RGB(float L, float a, float b) {
   RGBcolor[2] = constrain((blue*255.0), 0, 0xFF);
  
   return RGBcolor;
+}
+
+class Brush {
+  /* A Brush is comprised of 'child' layers added to a single 'parent' PShape. */
+  
+  PShape parent = createShape(GROUP);
+
+  int brushRad = (int) random(5, 8);     // initial radius of brush
+  int numLayers = (int) random(5, 9);    // number of layers that comprise each brush
+  int numVerts[];                        // each layer has a different number of vertices
+  
+  color brushCol;   // the color of the paint to apply with the Brush
+  
+  Brush(color bc) {
+    /* Constructor for a Brush; each 'child' layer is a polygon with a random number of sides. */
+    
+    brushCol = color(red(bc), green(bc), blue(bc), 1);
+    
+    float tempRad = brushRad;    // the radius changes as the 'child' layer is created
+    float tempAng = 0;           // initialize the angle at 0
+    int deltaRad = 2;            // radius changes by random(-deltaRad, +deltaRad)
+    
+    // Determine the (random) number of vertices per layer, and store them in an array:
+    
+    numVerts = new int[numLayers];
+    for (int v = 0; v < numLayers; v++)
+      numVerts[v] = (int) random(8, 16);
+    
+    // Create the 'child' layers:
+        
+    for (int layer = 0; layer < numLayers; layer++) {
+      
+      PShape child = createShape();
+    
+      child.beginShape();
+        child.fill(brushCol);
+        child.noStroke();
+        int nv = numVerts[layer];
+        for (int v = 0; v < nv; v++) {
+          child.vertex(tempRad * cos(tempAng), tempRad * sin(tempAng));
+          tempRad += (int) random(-deltaRad, deltaRad);
+          tempAng += TWO_PI / nv;
+        }
+      child.endShape(CLOSE);
+
+      parent.addChild(child);
+
+    }
+  }
+  
+  void display(float x, float y) {
+    /* Put the Brush to paper. */
+    
+    float xNow = x;
+    float yNow = y;
+    for (int squiggle = 0; squiggle < 8; squiggle++) {
+      shape(this.parent, xNow, yNow);
+      xNow += random(-3, 3);
+      yNow += random(-3, 3);
+    }  
+  }
+  
 }
