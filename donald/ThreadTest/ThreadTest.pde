@@ -8,7 +8,7 @@ float[] SCORES;
 boolean startThreads = true;
 
 
-int POPULATION = 10;
+int POPULATION = 100;
 int WIDTH = 200;
 int HEIGHT = 200;
 boolean START = false;
@@ -42,13 +42,14 @@ void setup() {
 }
 
 void draw() {
-  for(Canvas c: allCanvases) {
-      c.display();
+  if (startThreads) for(Canvas c: allCanvases) {
+      c.t.start();
+      startThreads = false;
   }
   for(Canvas c: allCanvases) {
     if (c.done) {
-      c.getTime();
-      c.stop = true;
+      c.display();
+      c.done = false;
     }
   }
   /*

@@ -1,10 +1,10 @@
 int[] VARIANTS = {4, 5, 10, 15, 16};
-int STROKES = 100;
-class Canvas {
+int STROKES = 10;
+class Canvas implements Runnable {
   /* A Canvas is a child window, independent of the rest. */
   
-  //public Thread t = new Thread(this);
-  public boolean stop = false;
+  public Thread t = new Thread(this);
+  
   float xCenter, yCenter;  // center coordinates of child window
   int sideLength;          // side length of child window
   color fillColor;         // fill color of child window
@@ -211,9 +211,10 @@ class Canvas {
   
   
 
-  void display() {
+  void run() {
     /* Draws the Canvas to the main window. */
-    if(!stop){
+    println("started");
+    while(!done) {
     body.beginDraw();
       // Not doing anything interesting graphically yet:
       randVal = random(1);
@@ -226,14 +227,15 @@ class Canvas {
     
     // Add the Canvas to the window; the math is for centering correctly,
     // as an image uses the upper left corner as the origin:
-    image(body, xCenter - sideLength/2, yCenter - sideLength/2);
+    //image(body, xCenter - sideLength/2, yCenter - sideLength/2);
     }
+    println("ended");
+    
   }
   
-  void getTime() {
-    if(!stop) {
+  void display() {
+    image(body, xCenter - sideLength/2, yCenter - sideLength/2);
     println(millis());
-    }
   }
   
   
