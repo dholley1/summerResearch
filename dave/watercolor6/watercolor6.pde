@@ -13,7 +13,7 @@ void setup() {
   size(1200, 400);
   background(255);
   
-  originalImage = loadImage("portrait.jpg");
+  originalImage = loadImage("landscape.jpg");
   image(originalImage, 0, 0);
 }
 

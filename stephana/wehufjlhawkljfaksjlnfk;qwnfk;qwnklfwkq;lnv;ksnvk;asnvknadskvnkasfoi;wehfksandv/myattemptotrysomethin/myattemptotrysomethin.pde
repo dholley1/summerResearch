@@ -5,13 +5,13 @@ int dheight;
 storage st;
 
 void setup() {
-  size(300, 188);
-  //noSmooth();
+  size(600, 188);
   fill(126);
   background(102);
   die = loadImage("die.jpg");
   dwidth = die.width;
   dheight = die.height;
+  //colorMode(RGB, 100);
 }
 
 void draw() {
@@ -20,11 +20,13 @@ void draw() {
   float[] hahaha = getLength(center);
   println(hahaha);
   noLoop();
+  int ra = 20;
   ellipse(dwidth/2, dheight/2, 10, 10);
-  ellipse(dwidth/2+60, dheight/2+60, 10, 10);
-  ellipse(dwidth/2-60, dheight/2-60, 10, 10);
-  ellipse(dwidth/2-60, dheight/2+60, 10, 10);
-  ellipse(dwidth/2+60, dheight/2-60, 10, 10);
+  ellipse(dwidth/2+ra, dheight/2+ra, 10, 10);
+  ellipse(dwidth/2-ra, dheight/2-ra, 10, 10);
+  ellipse(dwidth/2-ra, dheight/2+ra, 10, 10);
+  ellipse(dwidth/2+ra, dheight/2-ra, 10, 10);
+  //outline();
 }
 
 void mousePressed() {
@@ -126,7 +128,6 @@ tuple nextPoint(tuple point, int dir) {
   return newTuple;
 }
 
-///********************************************************************/
 boolean checkRGB(tuple point){
   // true if the difference is visibly noticeable to human eyes
   // false if considered "similar"
@@ -154,19 +155,4 @@ boolean checkRGB(tuple point){
     }
   }    
   return false;
-}
-///********************************************************************/
-
-void chocolatemochalatte(tuple point) {
-  if (checkRGB(point)) {
-    st.addTuple(point);
-  }
-  int d=1;
-  while (d<9) {
-    if (checkRGB(nextPoint(point, d))) {
-      st.addTuple(nextPoint(point, d));
-      chocolatemochalatte(nextPoint(point, d));
-    }
-    d++;
-  }
 }

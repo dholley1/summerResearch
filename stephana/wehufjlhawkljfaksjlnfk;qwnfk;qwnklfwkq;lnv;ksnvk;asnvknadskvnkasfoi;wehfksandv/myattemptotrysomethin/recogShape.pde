@@ -60,7 +60,7 @@ tuple randomPoint(tuple point, float radius) {
   int y = point.y + int(randRadi * sin(randTheta));
   tuple randPoint = new tuple(x, y);
   return randPoint;
-} //<>//
+}
 
 tuple march(tuple point, tuple dir, int r) {
   tuple next = new tuple(point.x + 2 * r * dir.x, point.y + 2 * r * dir.y);
