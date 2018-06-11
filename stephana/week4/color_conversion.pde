@@ -1,34 +1,19 @@
-/*
-float findDist(color c1, color c2)
-float calculateDist(float[] color1, float[] color2)
-public float[] RGB2LAB(float R, float G, float B)
-public float[] LAB2RGB(float L, float a, float b)
-*/
-
 float findDist(color c1, color c2) {
   float[] ColorInLab1 = RGB2LAB(red(c1), green(c1), blue(c1));
   float[] ColorInLab2 = RGB2LAB(red(c2), green(c2), blue(c2));
-
-  float distance = calculateDist(ColorInLab1, ColorInLab2);
-  return distance;
-}
-
-float calculateDist(float[] color1, float[] color2) {
-  // calculation of a vector distance between two colors
-  // given two CIELab colors returns the distance between them
-
-  float L1 = color1[0];
-  float a1 = color1[1];
-  float b1 = color1[2];
-
-  float L2 = color2[0];
-  float a2 = color2[1];
-  float b2 = color2[2];
   
+  float L1 = ColorInLab1[0];
+  float a1 = ColorInLab1[1];
+  float b1 = ColorInLab1[2];
+
+  float L2 = ColorInLab2[0];
+  float a2 = ColorInLab2[1];
+  float b2 = ColorInLab2[2];
+
   float distance = sqrt(pow(L1-L2, 2) + pow(a1-a2, 2) + pow(b1-b2, 2));
-  
   return distance;
 }
+
 
 public float[] RGB2LAB(float R, float G, float B) {
 
