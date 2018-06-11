@@ -5,6 +5,9 @@ int GENECOUNT = 28;
 int NUM = 0;
 float[] SCORES;
 
+boolean startThreads = true;
+
+
 int POPULATION = 10;
 int WIDTH = 200;
 int HEIGHT = 200;
@@ -39,8 +42,16 @@ void setup() {
 }
 
 void draw() {
-  for(Canvas c: allCanvases)
-    c.display();
+  for(Canvas c: allCanvases) {
+      c.display();
+  }
+  for(Canvas c: allCanvases) {
+    if (c.done) {
+      c.getTime();
+      c.stop = true;
+    }
+  }
+  /*
   //to keep track of generations
   GEN = PAINTING / POPULATION;
   
@@ -88,7 +99,7 @@ void draw() {
     
     //reset count each time
     count = 0;
-  }
+  }*/
 }
 
 

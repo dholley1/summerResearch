@@ -1,12 +1,10 @@
-
-
-//int GENECOUNT = 28;
 int[] VARIANTS = {4, 5, 10, 15, 16};
+int STROKES = 100;
 class Canvas {
   /* A Canvas is a child window, independent of the rest. */
   
-  
-  
+  //public Thread t = new Thread(this);
+  public boolean stop = false;
   float xCenter, yCenter;  // center coordinates of child window
   int sideLength;          // side length of child window
   color fillColor;         // fill color of child window
@@ -215,7 +213,7 @@ class Canvas {
 
   void display() {
     /* Draws the Canvas to the main window. */
-    
+    if(!stop){
     body.beginDraw();
       // Not doing anything interesting graphically yet:
       randVal = random(1);
@@ -228,9 +226,14 @@ class Canvas {
     
     // Add the Canvas to the window; the math is for centering correctly,
     // as an image uses the upper left corner as the origin:
-    //if(done)
     image(body, xCenter - sideLength/2, yCenter - sideLength/2);
-    
+    }
+  }
+  
+  void getTime() {
+    if(!stop) {
+    println(millis());
+    }
   }
   
   
@@ -308,7 +311,7 @@ class Canvas {
       //advaces the brush by dx and dy, or puts the brush at a new location
       advance();
     }
-    if(strokes == 500) {
+    if(strokes == STROKES) {
       done = true;
       strokes = 0;
     }
@@ -353,27 +356,16 @@ class Canvas {
         xPos = random(WIDTH);
         yPos = random(HEIGHT);
       }
-      //if (changeAreaRange > randVal) {
-      //}
       if (changeVariantChance > randVal) {
         //genes[VARIANTS[int(randVal * 5)]] = random(-.5, .5);
         changeVariant(int(randVal * 5));
       }
-      //if(changeVariantRange > randVal) {
-      //  
-      //}
-      //if(resetCharacteristicChance > randVal) {
-      //  
-      //}
-      //if(reverseDeltaPressureChance > randVal) {
-      //  
-      //}
       if(reverseVariantChance > randVal) {
         //genes[VARIANTS[int(randVal * 5)]] *= -1;
         reverseVariant(int(randVal * 5));
       }
-      deltaXPos += variationXPos;
-      deltaYPos += variationYPos;
+      //deltaXPos += variationXPos;
+      //deltaYPos += variationYPos;
         
       xVelocity = origXVelocity;
       yVelocity = origYVelocity;

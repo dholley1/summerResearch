@@ -16,6 +16,19 @@ void setup() {
 
 void draw() {
   image(die, 0, 0, dwidth, dheight);
+  tuple center = new tuple(dwidth/2, dheight/2);
+  float[] hahaha = getLength(center);
+  println(hahaha);
+  noLoop();
+  ellipse(dwidth/2, dheight/2, 10, 10);
+  ellipse(dwidth/2+60, dheight/2+60, 10, 10);
+  ellipse(dwidth/2-60, dheight/2-60, 10, 10);
+  ellipse(dwidth/2-60, dheight/2+60, 10, 10);
+  ellipse(dwidth/2+60, dheight/2-60, 10, 10);
+}
+
+void mousePressed() {
+  println("At (", mouseX, ", ", mouseY, ")");
 }
 
 class tuple {
