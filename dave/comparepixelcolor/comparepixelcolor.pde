@@ -2,18 +2,16 @@
 
 // Mess with these variables:
 
-//String fileName = "original.png";
+String fileName = "original.png";
 //String fileName = "frog.png";
 //String fileName = "road.jpg";
-String fileName = "frog1.png";
-
-float powerMod = 3;       // an exponent used in assigning whiteness to a pixel
-float discRad = 1.6;          // the radius of the disc neighborhood for each pixel
-int numChecks = 6;        // the number of pixel pairs to check for each 180 degree rotation
+//String fileName = "frog1.png";
 
 // Don't mess with these variables:
 
-PImage originalImage;     // the image that we are analyzing
+PImage originalImage;         // the image that we are analyzing
+boolean clickedOnce = false;  // true when the user has clicked on one pixel but not another yet
+color colorOne, colorTwo;     // the RGB colors of the first and second clicked pixels
 
 void setup() {
   size(400, 200);
@@ -29,78 +27,44 @@ void setup() {
 
 void draw() {
   
-  noLoop();
-  analyzeImage(originalImage);
+  //analyzeImage(originalImage);
   
 }
 
-void analyzeImage(PImage img) {
-  /* Move through the originalImage pixel by pixel, assigning a probability
-     to each of being on an edge. */
-     
-  image(img, 0, 0);
+void mousePressed() {
+  /* Allow the user to click on two pixels, and display their LAB colors and their LAB distance. */
   
-  // Iterate through all of the pixels in the image:
-  
-  for (int i = 0; i < width/2; i++) {
-    for (int j = 0; j < height; j++) {
-      
-      // Grab the probability that a pixel is on an edge:
-      int edgeProb = (int) pixelCheck(i, j);
-      
-      // Color the associated pixel (on the right) with a grayscale version of that probability:
-      
-      float edgeProbAdj = constrain(pow(edgeProb, powerMod), 0, 100);  // tweak the probability
-      stroke(edgeProbAdj);
-      point(i + width/2, j);
-      
-    }
-  }
-}
+  if (clickedOnce) {
+    // ..then the user has already clicked a pixel:
+    
+    colorTwo = get(mouseX, mouseY);
+    float[] colorTwoLAB = RGB2LAB(red(colorTwo), green(colorTwo), blue(colorTwo));
+    
+    println("colorTwoLAB is:");
+    println(colorTwoLAB);
+    
+    fill(colorTwo);
+    rect(width - width/4, 0, width/4, height);
 
-int pixelCheck(int i, int j) {
-  /* Analyze the pixel (i, j) in the original image to predict the likelihood that it is on an edge. */
-  
-  // Set the original angle (for polar coordinates) to a random angle:
-  float theta = random(TWO_PI);
-  
-  // Initialize a difference counter to keep track of total LAB distance between pairs:
-  float diffCounter = 0;
-  
-  // Begin choosing pairs of pixels surrounding the given pixel (i, j):
-  for ( int check = 0; check < numChecks; check++ ) {
-  
-    // Convert polar coordinates to rectangular; determine the 'start' and 'end' points for measuring gradient:
-    int x0 = (int) (i + discRad * cos(theta));
-    int y0 = (int) (j + discRad * sin(theta));
-    int x1 = (int) (i + discRad * cos(theta + PI));
-    int y1 = (int) (j + discRad * sin(theta + PI));
-  
-    // Grab the colors associated with the points (x0, y0) and (x1, y1):
-    color c0 = get(x0, y0);
-    color c1 = get(x1, y1);
+    float distance = findDist(colorOne, colorTwo);
+    println("LAB distance is:");
+    println(distance);
     
-    // Convert those colors to LAB values:
-    float[] c0_LAB = RGB2LAB(red(c0), green(c0), blue(c0));
-    float[] c1_LAB = RGB2LAB(red(c1), green(c1), blue(c1));
+  } else {
+    // ..the user has not already clicked a pixel:
     
-    // Grab the LAB distance between those colors:
-    float distance = findDist(color((int) c0_LAB[0], (int) c0_LAB[1], (int) c0_LAB[2]),
-                              color((int) c1_LAB[0], (int) c1_LAB[1], (int) c1_LAB[2])
-                             );
+    colorOne = get(mouseX, mouseY);
+    float[] colorOneLAB = RGB2LAB(red(colorOne), green(colorOne), blue(colorOne));
     
-    // Keep track of the total of the pairwise distances:
-    diffCounter += distance;
-  
-    // Increment the angle so that we can perform a new gradient check:
-    theta += (PI / numChecks) % TWO_PI;
+    println("colorOneLAB is:");
+    println(colorOneLAB);
     
+    fill(colorOne);
+    rect(width/2, 0, width/4, height);
   }
   
-  // Take (and return) the average of the pairwise distances:
-  int result = (int) (diffCounter / numChecks);
-  return result;
-
+  clickedOnce = !clickedOnce;   // toggle
+  
 }
 
 float findDist(color c1, color c2) {
