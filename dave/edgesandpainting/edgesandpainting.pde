@@ -18,7 +18,7 @@ void setup() {
   background(100);
   
   // Put the original image on the left side of the window:
-  originalImage = loadImage("mountain.jpg");
+  originalImage = loadImage("apples.jpg");
   image(originalImage, 0, 0);
 }
 

@@ -14,19 +14,12 @@ float score_painting(String filename) {
   result.loadPixels();
   
   float hehe = gridSampleTest();
-  //println(count, ": gridSampleTest score: ", hehe);
-  //count++;
-  
-  //global++;
   return hehe;
 }
 
 
 // CREATE THE PERCENTS CHART
 float[] percentage() {
-  //distTxt = createWriter("dist.txt");
-  //scaledTxt = createWriter("scaled.txt");
-  //pairTxt = createWriter("pair.txt");
   
   // Create arrays to save scores and percentages for each painting
   float[] scoreChart = new float[POPULATION];
