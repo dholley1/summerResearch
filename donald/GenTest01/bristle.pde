@@ -22,12 +22,12 @@ class bristle {
     canvas.point(x, y);
   }
   
-  void drag(float dx, float dy, float x, float y) {
+  void drag(float dx, float dy, float x, float y, float p) {
     float speed = sqrt(pow(dx, 2) + pow(dy, 2));
-    float xchange = speed < thresh ? (xpos - x) / div / (speed + 1) 
-                                   : (x - xpos) / div * (speed + 1);
-    float ychange = speed < thresh ? (ypos - y) / div / (speed + 1)
-                                   : (y - ypos) / div * (speed + 1);
+    float xchange = speed < thresh ? (xpos - x) / div / (speed + 1) * p 
+                                   : (x - xpos) / div * (speed + 1) / p;
+    float ychange = speed < thresh ? (ypos - y) / div / (speed + 1) * p
+                                   : (y - ypos) / div * (speed + 1) / p;
     float newx = xpos + dx + random(lowXFactor, highXFactor) + xchange;
     float newy = ypos + dy + random(lowYFactor, highYFactor) + ychange;
     if (abs(x - newx) > 20)

@@ -5,8 +5,8 @@ int GENECOUNT = 28;
 int NUM = 0;
 float[] SCORES;
 
-boolean startThreads = true;
 
+boolean startThreads = true;
 
 int POPULATION = 10;
 int WIDTH = 200;
@@ -28,10 +28,10 @@ void setup() {
     allCanvases.add(new Canvas(100 + (i < 5 ? 201 * i : 201 * (i - 5)), 
                                301 + (i < 5 ? 0 : 201), 200, color(255),
                                
-                               random(-3, 3), random(-3, 3), random(-1, 1), random(-1, 1),
-                               random(-.5, .5), random(-.5, .5), random(1, 50), 10.0,
+                               random(-5, 5), random(-5, 5), random(-1, 1), random(-1, 1),
+                               random(-.5, .5), random(-.5, .5), random(1, 100), 10.0,
                                
-                               1, 1, 1, //bp
+                               random(1, 2), random(1, 2), random(1, 2), //bp
                                
                                random(0, WIDTH), random(0, HEIGHT), random(-20, 20),
                                random(-20, 20), random(-.5, .5), random(-.5, .5),
@@ -45,13 +45,6 @@ void draw() {
   for(Canvas c: allCanvases) {
       c.display();
   }
-  for(Canvas c: allCanvases) {
-    if (c.done) {
-      c.getTime();
-      c.stop = true;
-    }
-  }
-  /*
   //to keep track of generations
   GEN = PAINTING / POPULATION;
   
@@ -99,45 +92,5 @@ void draw() {
     
     //reset count each time
     count = 0;
-  }*/
-}
-
-
-void keyPressed() {
-  //save("../../../../../../Volumes/dholley/test.png");
-  try {
-    Formatter newFile = new Formatter(
-      "../../../../../../Volumes/dholley/summer/data/scores" + 
-      Integer.toString(NUM) + ".txt");
-    for(int i = 0; i < POPULATION; i++) {
-      for(int j = 0; j < GENECOUNT; j++) {
-        newFile.format(Float.toString(genes[i][j]) + " ");
-        if(j % 5 == 4) newFile.format("\n");
-      }
-      
-      newFile.format("\n" + SCORES[i] + "\n\n");
-      
-    }
-    newFile.close();
   }
-  catch(Exception e){
-    System.out.println("no file");
-  }
-  try {
-    Scanner oldFile = new Scanner(new File(
-      "../../../../../../Volumes/dholley/summer/data/scores" + 
-      Integer.toString(NUM) + ".txt"));
-    while(oldFile.hasNext()) {
-      String a = oldFile.next();
-      println(a);
-    }
-    oldFile.close();
-  }
-  catch(Exception e){
-    System.out.println("no file");
-  }
-  
-  
-  //for(Canvas c: allCanvases)
-    //c.done = true;
 }
