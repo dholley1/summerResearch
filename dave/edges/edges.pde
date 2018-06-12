@@ -2,18 +2,22 @@
 
 // Mess with these variables:
 
+<<<<<<< HEAD
 String fileName = "frog.png";
+=======
+//String fileName = "original.png";
+//String fileName = "frog.png";
+//String fileName = "road.jpg";
+String fileName = "frog1.png";
+>>>>>>> 5d200b05b4d92e7d21abba914f635d8b15496792
 
-float powerMod = 3;    // an exponent used in assigning whiteness to a pixel
-int discRad = 2;       // the radius of the disc neighborhood for each pixel
-int numChecks = 8;     // the number of pixel pairs to check for each 180 degree rotation
+float powerMod = 3;       // an exponent used in assigning whiteness to a pixel
+float discRad = 1.6;          // the radius of the disc neighborhood for each pixel
+int numChecks = 6;        // the number of pixel pairs to check for each 180 degree rotation
 
 // Don't mess with these variables:
 
-PImage originalImage;  // the image that we are analyzing
-
-boolean oneClicked = false;     // true: when the mouse has been clicked on a first pixel
-color firstColor, secondColor;  // stores the two clicked pixels' colors
+PImage originalImage;     // the image that we are analyzing
 
 void setup() {
   size(400, 200);
@@ -60,14 +64,14 @@ void analyzeImage() {
 int pixelCheck(int i, int j) {
   /* Analyze the pixel (i, j) in the original image to predict the likelihood that it is on an edge. */
   
-  // Set the original angle (for polar coordinates) to 0:
-  float theta = 0;
+  // Set the original angle (for polar coordinates) to a random angle:
+  float theta = random(TWO_PI);
   
   // Initialize a difference counter to keep track of total LAB distance between pairs:
   float diffCounter = 0;
   
   // Begin choosing pairs of pixels surrounding the given pixel (i, j):
-  while ( theta < 3.14 ) {
+  for ( int check = 0; check < numChecks; check++ ) {
   
     // Convert polar coordinates to rectangular; determine the 'start' and 'end' points for measuring gradient:
     int x0 = (int) (i + discRad * cos(theta));
@@ -92,7 +96,7 @@ int pixelCheck(int i, int j) {
     diffCounter += distance;
   
     // Increment the angle so that we can perform a new gradient check:
-    theta += PI / numChecks;
+    theta += (PI / numChecks) % TWO_PI;
     
   }
   

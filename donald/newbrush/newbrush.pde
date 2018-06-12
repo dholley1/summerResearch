@@ -3,6 +3,7 @@ boolean active = false;
 float xpos = 0;
 float ypos = 0;
 float brushVelocity = 0;
+float brushPressure = .99;
 float brushRange = 10;
 float transparency = 100;
 color c = color(100, 200, 50, 100);
@@ -30,8 +31,17 @@ void draw() {
     for(bristle b: bristles) {
       float dx = mouseX - xpos;
       float dy = mouseY - ypos;
-      b.drag(dx, dy, xpos, ypos);
+      b.drag(dx, dy, xpos, ypos, brushPressure);
     }
+    if(keyPressed == true) {
+        brushPressure += .1;
+        if (brushPressure > 10) brushPressure = 10;
+      }
+      else {
+        brushPressure -= .1;
+        if (brushPressure < 1) brushPressure = 1;
+      }
+  
     //float rand = random(1);
     //if(rand > .9)
       //LEAKS.add(new Leak(mouseX, mouseY));

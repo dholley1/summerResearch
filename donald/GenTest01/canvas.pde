@@ -10,7 +10,7 @@ class Canvas {
   color fillColor;         // fill color of child window
   
   PGraphics body;          // the graphical body of the Canvas
-  ////////////////
+  /////////
   //GENES
   float xVelocity;
   float yVelocity;
@@ -201,7 +201,7 @@ class Canvas {
     genes[27] = colorDifferenceThresh;
     
     body = createGraphics(sideLength, sideLength);
-    for(int i = 0; i < 400; i ++)
+    for(int i = 0; i < 200; i ++)
       bristles.add(new bristle(body));
   }
   
@@ -230,14 +230,7 @@ class Canvas {
     }
   }
   
-  void getTime() {
-    if(!stop) {
-    println(millis());
-    }
-  }
-  
-  
-    void update() {
+  void update() {
     //set background and location
     
     //loop for painting
@@ -303,7 +296,7 @@ class Canvas {
         float dx = xPos - xpos;
         float dy = yPos - ypos;
         for(bristle b: bristles) {
-          b.drag(dx, dy, xpos, ypos);
+          b.drag(dx, dy, xpos, ypos, brushPressure);
         }
       }
       xpos = xPos;
@@ -364,8 +357,6 @@ class Canvas {
         //genes[VARIANTS[int(randVal * 5)]] *= -1;
         reverseVariant(int(randVal * 5));
       }
-      //deltaXPos += variationXPos;
-      //deltaYPos += variationYPos;
         
       xVelocity = origXVelocity;
       yVelocity = origYVelocity;
