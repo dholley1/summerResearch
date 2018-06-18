@@ -2,14 +2,13 @@
 
 // Mess with these variables:
 
-<<<<<<< HEAD
 String fileName = "frog.png";
-=======
+
 //String fileName = "original.png";
 //String fileName = "frog.png";
 //String fileName = "road.jpg";
-String fileName = "frog1.png";
->>>>>>> 5d200b05b4d92e7d21abba914f635d8b15496792
+//String fileName = "frog1.png";
+
 
 float powerMod = 3;       // an exponent used in assigning whiteness to a pixel
 float discRad = 1.6;          // the radius of the disc neighborhood for each pixel

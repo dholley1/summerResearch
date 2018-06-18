@@ -7,9 +7,6 @@ void setup() {
 void draw() {
   img = loadImage("frog.jpg");
   image(img, 0, 0, 200, 200);
-  rect(0, 0, 50, 50);
-  rect(0, 0, 20, 20);
-  rect(0, 0, 10, 10);
 
   noLoop();
 }
