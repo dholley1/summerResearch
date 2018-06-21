@@ -2,44 +2,46 @@
 
 // Mess with these variables:
 
-String fileName = "frog1.png";
+String fileName = "frog.png";
 
-float powerMod = 3;    // an exponent used in assigning whiteness to a pixel
-int discRad = 2;       // the radius of the disc neighborhood for each pixel
-int numChecks = 8;     // the number of pixel pairs to check for each 180 degree rotation
+//String fileName = "original.png";
+//String fileName = "frog.png";
+//String fileName = "road.jpg";
+//String fileName = "frog1.png";
+
+
+float powerMod = 3;       // an exponent used in assigning whiteness to a pixel
+float discRad = 1.6;          // the radius of the disc neighborhood for each pixel
+int numChecks = 6;        // the number of pixel pairs to check for each 180 degree rotation
 
 // Don't mess with these variables:
 
-PImage originalImage;  // the image that we are analyzing
-
-boolean oneClicked = false;     // true: when the mouse has been clicked on a first pixel
-color firstColor, secondColor;  // stores the two clicked pixels' colors
+PImage originalImage;     // the image that we are analyzing
 
 void setup() {
   size(400, 200);
   ellipseMode(CENTER);
   background(0);
-  
+
   colorMode(RGB, 100); // sets the RGB scale to 0-100 (rather than 0-255)
   
   // Put the original image on the left side of the window:
   originalImage = loadImage(fileName);
+  
   image(originalImage, 0, 0);
+
 }
 
 void draw() {
   
   noLoop();
-  analyzeImage(originalImage);
-  
+  analyzeImage();
 }
 
-void analyzeImage(PImage img) {
+void analyzeImage() {
   /* Move through the originalImage pixel by pixel, assigning a probability
      to each of being on an edge. */
-     
-  image(img, 0, 0);
-  
+       
   // Iterate through all of the pixels in the image:
   
   for (int i = 0; i < width/2; i++) {
@@ -52,7 +54,7 @@ void analyzeImage(PImage img) {
       
       float edgeProbAdj = constrain(pow(edgeProb, powerMod), 0, 100);  // tweak the probability
       stroke(edgeProbAdj);
-      point(i + width/2, j);
+      point(i+width/2, j);
       
     }
   }
@@ -61,14 +63,14 @@ void analyzeImage(PImage img) {
 int pixelCheck(int i, int j) {
   /* Analyze the pixel (i, j) in the original image to predict the likelihood that it is on an edge. */
   
-  // Set the original angle (for polar coordinates) to 0:
-  float theta = 0;
+  // Set the original angle (for polar coordinates) to a random angle:
+  float theta = random(TWO_PI);
   
   // Initialize a difference counter to keep track of total LAB distance between pairs:
   float diffCounter = 0;
   
   // Begin choosing pairs of pixels surrounding the given pixel (i, j):
-  while ( theta < 3.14 ) {
+  for ( int check = 0; check < numChecks; check++ ) {
   
     // Convert polar coordinates to rectangular; determine the 'start' and 'end' points for measuring gradient:
     int x0 = (int) (i + discRad * cos(theta));
@@ -77,8 +79,8 @@ int pixelCheck(int i, int j) {
     int y1 = (int) (j + discRad * sin(theta + PI));
   
     // Grab the colors associated with the points (x0, y0) and (x1, y1):
-    color c0 = get(x0, y0);
-    color c1 = get(x1, y1);
+    color c0 = originalImage.get(x0, y0);
+    color c1 = originalImage.get(x1, y1);
     
     // Convert those colors to LAB values:
     float[] c0_LAB = RGB2LAB(red(c0), green(c0), blue(c0));
@@ -93,7 +95,7 @@ int pixelCheck(int i, int j) {
     diffCounter += distance;
   
     // Increment the angle so that we can perform a new gradient check:
-    theta += PI / numChecks;
+    theta += (PI / numChecks) % TWO_PI;
     
   }
   
