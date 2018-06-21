@@ -112,7 +112,7 @@ class Canvas {
   //color values for the paint
   color targetc;
   
-  color c;
+  public color c;
   float transparency = 20;
   
   int strokes = 0;
@@ -208,7 +208,7 @@ class Canvas {
     
     body = createGraphics(sideLength, sideLength);
     for(int i = 0; i < 50; i ++)
-      bristles.add(new bristle(body));
+      bristles.add(new bristle(this, body, i > 5? true:false));
       
     makeEdgeMap();
   }

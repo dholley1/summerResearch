@@ -18,11 +18,11 @@ void setup() {
   stroke(c);
   //fill(c);
   for(int i = 0; i < 400; i ++)
-    bristles.add(new bristle());
+    bristles.add(new bristle(i > 20? true: false));
 }
 
 void draw() {
-  c = color(100, 200,  50, transparency);
+  //c = color(100, 200,  50, transparency);
   stroke(c);
   fill(c);
   brushVelocity = sqrt(pow(mouseX - xpos, 2) + 
@@ -47,6 +47,7 @@ void draw() {
   }
   else if(pressed) {
     //executes if the mouse has just been pressed
+    c = color(random(255), random(255), random(255), transparency);
     for(bristle b: bristles) {
       float angle = random(0, 2*PI);
       b.press(mouseX + cos(angle) * random(0, brushRange),

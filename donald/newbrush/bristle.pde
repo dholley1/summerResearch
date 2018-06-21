@@ -7,10 +7,16 @@ class bristle {
   float highYFactor = .1;
   float thresh = 5;
   float shift = .1;
+  boolean smear;
+  color lastColor;
   
   boolean atMax = false;
   
   float div = 100;
+  
+  public bristle(boolean s) {
+    smear = s;
+  }
   
   void press(float x, float y) {
     xpos = x;
@@ -31,16 +37,18 @@ class bristle {
       newx = xpos + dx;
       newy = ypos + dy;
     }
-    float whiteOffset = newx - mouseX + newy - mouseY < 5 ?
-          5 * (newx - mouseX + newy - mouseY) :
-          newx - mouseX + newy - mouseY < 10 ?
-          5 * (-10 + newx - mouseX + newy - mouseY) :
-          newx - mouseX + newy - mouseY < 15 ?
-          5 * (-15 + newx - mouseX + newy - mouseY):
-          5 * (-20 + newx - mouseX + newy - mouseY);
-    stroke(red(c) + whiteOffset, green(c) + whiteOffset, blue(c) + whiteOffset);
-    if(random(1) > .1)
-    stroke(get((int)newx, (int)newy));
+    if(smear)
+      stroke(get((int)newx, (int)newy));
+    else {
+      float whiteOffset = newx - mouseX + newy - mouseY < 5 ?
+            5 * (newx - mouseX + newy - mouseY) / 2 :
+            newx - mouseX + newy - mouseY < 10 ?
+            5 * (-10 + newx - mouseX + newy - mouseY) / 2 :
+            newx - mouseX + newy - mouseY < 15 ?
+            5 * (-15 + newx - mouseX + newy - mouseY) / 2:
+            5 * (-20 + newx - mouseX + newy - mouseY) / 2;
+      stroke(red(c) + whiteOffset, green(c) + whiteOffset, blue(c) + whiteOffset);
+    }
     line(xpos, ypos, newx, newy);
     xpos = newx;
     ypos = newy;

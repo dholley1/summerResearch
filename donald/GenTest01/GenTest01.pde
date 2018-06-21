@@ -28,7 +28,7 @@ void setup() {
                                301 + (i < 5 ? 0 : 201), 200, color(0),
                                
                                random(-2, 2), random(-2, 2), random(-.01, .01), random(-.01, .01),
-                               random(-.01, .01), random(-.01, .01), random(5, 50), 2.0,
+                               random(-.01, .01), random(-.01, .01), random(5, 100), 2.0,
                                
                                random(1, 2), random(1, 2), random(1, 2), //bp
                                

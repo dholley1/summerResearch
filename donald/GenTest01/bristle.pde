@@ -1,29 +1,36 @@
 class bristle {
-  //class for each bristle in brush
   float xpos;
   float ypos;
-  float lowXFactor = -.5;
-  float highXFactor = .5;
-  float lowYFactor = -.5;
-  float highYFactor = .5;
+  float lowXFactor = -.1;
+  float highXFactor = .1;
+  float lowYFactor = -.1;
+  float highYFactor = .1;
   float thresh = 5;
   float shift = .1;
+  boolean smear;
+  color lastColor;
+  
+  boolean atMax = false;
   
   float div = 100;
   
-  PGraphics canvas;
+  PGraphics body;
+  Canvas can;
   
-  bristle (PGraphics c) {
-    canvas = c;
+  public bristle(Canvas c, PGraphics b, boolean s) {
+    smear = s;
+    body = b;
+    can = c;
   }
   
   void press(float x, float y) {
     xpos = x;
     ypos = y;
-    canvas.point(x, y);
+    body.point(x, y);
   }
   
   void drag(float dx, float dy, float x, float y, float p) {
+    
     float speed = sqrt(pow(dx, 2) + pow(dy, 2));
     float xchange = speed < thresh ? (xpos - x) / div / (speed + 1) * p 
                                    : (x - xpos) / div * (speed + 1) / p;
@@ -31,11 +38,23 @@ class bristle {
                                    : (y - ypos) / div * (speed + 1) / p;
     float newx = xpos + dx + random(lowXFactor, highXFactor) + xchange;
     float newy = ypos + dy + random(lowYFactor, highYFactor) + ychange;
-    if (sqrt(pow(x - newx, 2) + pow(y - newy, 2)) > 4) {
+    if (sqrt(pow(x - newx, 2) + pow(y - newy, 2)) > 5) {
       newx = xpos + dx;
       newy = ypos + dy;
     }
-    canvas.line(xpos, ypos, newx, newy);
+    if(smear)
+      stroke(get((int)newx, (int)newy));
+    else {
+      float whiteOffset = dx + dy < 5 ?
+            5 * (dx + dy) / 2 :
+            dx + dy < 10 ?
+            5 * (-10 + dx + dy) / 2 :
+            dx + dy < 15 ?
+            5 * (-15 + dx + dy) / 2:
+            5 * (-20 + dx + dy) / 2;
+      stroke(red(can.c) + whiteOffset, green(can.c) + whiteOffset, blue(can.c) + whiteOffset);
+    }
+    body.line(xpos, ypos, newx, newy);
     xpos = newx;
     ypos = newy;
   }
