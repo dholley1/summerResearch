@@ -1,5 +1,5 @@
 class Leak {
-  int val = 5;
+  int val = 100;
   float xpos;
   float ypos;
   float dx;
@@ -20,20 +20,21 @@ class Leak {
   }
   
   void spread() {
-    for(int i = 0; i < 10; i++) {
-      float angle = random(0, 2*PI);
-      float dx = cos(angle) * random(0, 10);
-      float dy = sin(angle) * random(0, 10);
-      line(xpos, ypos, xpos + dx, ypos + dy);
-      //ellipse(xpos, ypos, 1 / (dx + .1), 1 / (dy + .1));
-      leaks.add(new Leak(xpos + dx, ypos + dy, val - 1));
+    if(!done) {
+      for(int i = 0; i < 1; i++) {
+        float angle = random(0, 2*PI);
+        float dx = cos(angle) * random(0, 1);
+        float dy = sin(angle) * random(0, 1);
+        line(xpos, ypos, xpos + dx, ypos + dy);
+        leaks.add(new Leak(xpos + dx, ypos + dy, val - 1));
+      }
+      done = true;
     }
-    done = true;
   }
   
   void addTo() {
     for(Leak l: leaks) {
-      LEAKS.add(l);
+      newLeaks.add(l);
     }
     leaks.clear();
   }

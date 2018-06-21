@@ -1,4 +1,5 @@
 class bristle {
+  //class for each bristle in brush
   float xpos;
   float ypos;
   float lowXFactor = -.5;
@@ -30,10 +31,10 @@ class bristle {
                                    : (y - ypos) / div * (speed + 1) / p;
     float newx = xpos + dx + random(lowXFactor, highXFactor) + xchange;
     float newy = ypos + dy + random(lowYFactor, highYFactor) + ychange;
-    if (abs(x - newx) > 20)
-      newx -= xchange;
-    if (abs(y - newy) > 20)
-      newy -= ychange;
+    if (sqrt(pow(x - newx, 2) + pow(y - newy, 2)) > 4) {
+      newx = xpos + dx;
+      newy = ypos + dy;
+    }
     canvas.line(xpos, ypos, newx, newy);
     xpos = newx;
     ypos = newy;
