@@ -328,8 +328,8 @@ class Canvas {
     //called each frame for brush dragging or when
     //it is moved
     if(move) {
-      xPos = lastXPos + deltaXPos;
-      yPos = lastYPos + deltaYPos;
+      xPos = random(0, WIDTH);//lastXPos + deltaXPos;
+      yPos = random(0, HEIGHT);//lastYPos + deltaYPos;
       if (xPos < 0 || xPos > WIDTH || yPos < 0 || yPos > HEIGHT) {
         xPos = random(WIDTH);
         yPos = random(HEIGHT);
@@ -590,7 +590,7 @@ class Canvas {
       abs(bAngle - edAngle2) :
       abs(abs(bAngle - edAngle2) - 2*PI);
     float difference = diff1 > diff2 ? diff2 : diff1;
-    float edge = edAngle > edAngle2 ? edAngle2 : edAngle;
+    float edge = diff1 > diff2 ? edAngle2 : edAngle;
     float average = (edge > 3*PI/2 && bAngle < PI/2) ||
                       (edge < PI/2 && bAngle > 3*PI/2) ?
                      abs((edge + bAngle) - (2*PI)) / 2 :
@@ -599,7 +599,7 @@ class Canvas {
            angleWeight*difference :
           -angleWeight*difference : !(edge<PI/2&&bAngle>3*PI/2||bAngle<PI&&edge>3*PI/2)?
           -angleWeight*difference :
-           angleWeight*difference ;
+           angleWeight*difference;
           
     return average;
   } 

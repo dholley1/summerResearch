@@ -43,7 +43,7 @@ class bristle {
       newy = ypos + dy;
     }
     if(smear)
-      stroke(get((int)newx, (int)newy));
+      body.stroke(body.get((int)newx, (int)newy));
     else {
       float whiteOffset = dx + dy < 5 ?
             5 * (dx + dy) / 2 :
@@ -52,7 +52,7 @@ class bristle {
             dx + dy < 15 ?
             5 * (-15 + dx + dy) / 2:
             5 * (-20 + dx + dy) / 2;
-      stroke(red(can.c) + whiteOffset, green(can.c) + whiteOffset, blue(can.c) + whiteOffset);
+      body.stroke(red(can.c) + whiteOffset, green(can.c) + whiteOffset, blue(can.c) + whiteOffset);
     }
     body.line(xpos, ypos, newx, newy);
     xpos = newx;

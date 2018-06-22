@@ -73,3 +73,8 @@ void mouseReleased() {
   transparency = 100;
   brushRange = 5;
 }
+
+void keyPressed() {
+  if(key == 'p')
+  save("mixingPaint.png");
+}

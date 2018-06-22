@@ -25,10 +25,10 @@ void setup() {
   //first generation
   for(int i = 0; i < POPULATION; i++) {
     allCanvases.add(new Canvas(100 + (i < 5 ? 201 * i : 201 * (i - 5)), 
-                               301 + (i < 5 ? 0 : 201), 200, color(0),
+                               301 + (i < 5 ? 0 : 201), 200, color(255),
                                
-                               random(-2, 2), random(-2, 2), random(-.01, .01), random(-.01, .01),
-                               random(-.01, .01), random(-.01, .01), random(5, 100), 2.0,
+                               random(-1,1), random(-1, 1), random(-.01, .01), random(-.01, .01),
+                               random(-.01, .01), random(-.01, .01), random(5, 50), 2.0,
                                
                                random(1, 2), random(1, 2), random(1, 2), //bp
                                
