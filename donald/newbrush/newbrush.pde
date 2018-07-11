@@ -4,24 +4,25 @@ float xpos = 0;
 float ypos = 0;
 float brushVelocity = 0;
 float brushPressure = .99;
-float brushRange = 10;
+float brushRange = 5;
 float transparency = 100;
 color c = color(100, 200, 50, 100);
 
 ArrayList<bristle> bristles = new ArrayList<bristle>();
 ArrayList<Leak> LEAKS = new ArrayList<Leak>();
+ArrayList<Leak> newLeaks = new ArrayList<Leak>();
 
 void setup() {
   size(500, 500);
   background(255);
   stroke(c);
-  fill(c);
-  for(int i = 0; i < 100; i ++)
-    bristles.add(new bristle());
+  //fill(c);
+  for(int i = 0; i < 400; i ++)
+    bristles.add(new bristle(i > 20? true: false));
 }
 
 void draw() {
-  c = color(100, 200,  50, transparency);
+  //c = color(100, 200,  50, transparency);
   stroke(c);
   fill(c);
   brushVelocity = sqrt(pow(mouseX - xpos, 2) + 
@@ -42,12 +43,11 @@ void draw() {
         if (brushPressure < 1) brushPressure = 1;
       }
   
-    //float rand = random(1);
-    //if(rand > .9)
-      //LEAKS.add(new Leak(mouseX, mouseY));
+    //LEAKS.add(new Leak(mouseX, mouseY));
   }
   else if(pressed) {
     //executes if the mouse has just been pressed
+    c = color(random(255), random(255), random(255), transparency);
     for(bristle b: bristles) {
       float angle = random(0, 2*PI);
       b.press(mouseX + cos(angle) * random(0, brushRange),
@@ -55,6 +55,9 @@ void draw() {
     }   
     active = true;
   }
+  for(Leak l: LEAKS) l.addTo();
+  for(Leak l: newLeaks) LEAKS.add(l);
+  newLeaks.clear();
   for(Leak l: LEAKS) l.spread();
   xpos = mouseX;
   ypos = mouseY;
@@ -68,5 +71,10 @@ void mouseReleased() {
   pressed = false;
   active = false;
   transparency = 100;
-  brushRange = 10;
+  brushRange = 5;
+}
+
+void keyPressed() {
+  if(key == 'p')
+  save("mixingPaint.png");
 }

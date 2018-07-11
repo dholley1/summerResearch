@@ -1,69 +1,62 @@
-int[] VARIANTS = {4, 5, 10, 15, 16};
-int STROKES = 10;
+int[] VARIANTS = {4, 5, 10, 15, 16};  //position of variant genes
+int STROKES = 10;  //number of strokes until paintings stop
+int EDGE = 0;  //current edge detection image being saved
+
 class Canvas implements Runnable {
   /* A Canvas is a child window, independent of the rest. */
   
   public Thread t = new Thread(this);
   
+
   float xCenter, yCenter;  // center coordinates of child window
   int sideLength;          // side length of child window
   color fillColor;         // fill color of child window
-  
   PGraphics body;          // the graphical body of the Canvas
-  ////////////////
+  PGraphics edges;         // edge map for canvas
+
   //GENES
-  float xVelocity;
-  float yVelocity;
-  float deltaXVelocity;
+  float xVelocity;              // x, y velocity of brush
+  float yVelocity;              
+  float deltaXVelocity;         // dx, dy of velocity of brush
   float deltaYVelocity;
-  float variationXVelocity;
+  float variationXVelocity;     // ddx, ddy of velocity of brush
   float variationYVelocity;
-  float brushLength;
-  float brushThickness;
-  float brushPressure;
-  float deltaBrushPressure;
-  float variationBrushPressure;
-  float xPos;
+  float brushLength;            // brush length, in pixels
+  float brushThickness;         // brush thickness, in pixels
+  float brushPressure;          // brush pressure
+  float deltaBrushPressure;     // change in brush pressure
+  float variationBrushPressure; // rate of change in change in brush pressure
+  float xPos;                   // x, y position on canvas
   float yPos;
-  float deltaXPos;
+  float deltaXPos;              // dx, dy of start of brush stroke on canvas
   float deltaYPos;
-  float variationYPos;
+  float variationYPos;          // ddx, ddy of start of brush stroke on canvas
   float variationXPos;
   
-  
-  float offChance;
+  float offChance;              // chance that brush reverses or picks a new random point
     
-    
-  //XTRA
-  float changeAreaChance;
-  //float changeAreaRange;
-  float changeVariantChance;
-  //float changeVariantRange;
-  //float resetCharacteristicChance;
-  float reverseXChance;
+  float changeAreaChance;       // chance that brush picks a new random starting point
+  float changeVariantChance;    // chance that brush variant gets changed
+  float reverseXChance;         // chance that brush reverses x, y direction
   float reverseYChance;
-  //float reverseDeltaPressureChance;
-  float reverseVariantChance;
+  float reverseVariantChance;   // chance that brush variant gets reversed
   
-  float offXColor;
+  float offXColor;              // offset of x, y color selection
   float offYColor;
-  float xRangeColor;
+  float xRangeColor;            // range of x, y where color is averaged to select brush color
   float yRangeColor;
   
+  float colorDifferenceThresh;  // inactive
   
-  float colorDifferenceThresh;
-  ////////////////
-  //GENES AS RANGES
-  //float[] xVelocityRange;
-  //float[] yVelocityRange;
-  //float[] brushLengthRange;
-  //float[] brushThicknessRange;
-  //float[] brushPressureRange;
-  //float[] deltaXPosRange;
-  //float[] deltaYPosRange;
-  ////////////////
+  float powerM;                 // power mod for edge detection map
+  float discR;                  // disc radius for edge detection map
+  float numC;                   // number of checks for edge detection map
+  float foresight;              // number of pixels that brush looks ahead for edge
+  float gas;                    // giving a shit if there is an edge
   
-  float[] genes = new float[GENECOUNT];
+  float angleWeight;            // weighted change in direction when edge is detecteds
+  
+  float[] genes = new float[GENECOUNT];  // array for all genes
   
   //STORE VALUES
   float origXVelocity;
@@ -98,9 +91,6 @@ class Canvas implements Runnable {
   boolean move = false;
   public boolean done = false;
   
-  //indivitual bristle points
-  //float[] xbristles = new float[400];
-  //float[] ybristles = new float[400];
   //bristles for brush
   ArrayList<bristle> bristles = new ArrayList<bristle>();
   
@@ -123,12 +113,7 @@ class Canvas implements Runnable {
   
   int strokes = 0;
   
-  
-  
-  
-  
-  
-  
+  float[] edgePoint = new float[2];
   
   
   Canvas(float x, float y, int s, color c,
@@ -136,7 +121,8 @@ class Canvas implements Runnable {
          float bl, float bt, float bp, float dbp, float vbp, float xp,
          float yp, float dxp, float dyp, float vxp, float vyp, float off,
          float cac, float cvc, float rxc, float ryc, float rvc,
-         float oxc, float oyc, float xrc, float yrc, float cdt) {
+         float oxc, float oyc, float xrc, float yrc, float cdt,
+         float pm, float dr, float nc, float f, float g, float aw) {
     xCenter = x;
     yCenter = y;
     sideLength = s;
@@ -170,6 +156,12 @@ class Canvas implements Runnable {
     xRangeColor = xrc;
     yRangeColor = yrc;
     colorDifferenceThresh = cdt;
+    powerM = pm;
+    discR = dr;
+    numC = nc;
+    foresight = f;
+    gas = g;
+    angleWeight = aw;
     
     genes[0] = xVelocity;
     genes[1] = yVelocity;
@@ -199,49 +191,62 @@ class Canvas implements Runnable {
     genes[25] = xRangeColor;
     genes[26] = yRangeColor;
     genes[27] = colorDifferenceThresh;
+    genes[28] = powerM;
+    genes[29] = discR;
+    genes[30] = numC;
+    genes[31] = foresight;
+    genes[32] = gas;
+    genes[33] = angleWeight;
     
     body = createGraphics(sideLength, sideLength);
-    for(int i = 0; i < 400; i ++)
-      bristles.add(new bristle(body));
+    for(int i = 0; i < 100; i ++)
+      bristles.add(new bristle(this, body, i > 10? true:false));
+      
+    makeEdgeMap();
   }
   
-  
-  
-  
-  
+  void makeEdgeMap() {
+    powerMod = powerM;
+    discRad = (int)discR;
+    numChecks = (int)numC;
+    edges = analyzeImage(input);
+    edges.save("data/" + Integer.toString(EDGE) + "edges.png");
+    EDGE++;
+  }
   
 
   void run() {
     /* Draws the Canvas to the main window. */
     println("started");
-    while(!done) {
+    
     body.beginDraw();
-      // Not doing anything interesting graphically yet:
-      randVal = random(1);
-      if(start || reset) {
-        body.background(fillColor);
-        //start = false;
-      }
+      while(!done) {
+        randVal = random(1);
+        if(start || reset) {
+          body.background(fillColor);
+          //start = false;
+        }
       update();
+      }
     body.endDraw();
-    
-    // Add the Canvas to the window; the math is for centering correctly,
-    // as an image uses the upper left corner as the origin:
-    //image(body, xCenter - sideLength/2, yCenter - sideLength/2);
-    }
     println("ended");
-    
   }
   
   void display() {
     image(body, xCenter - sideLength/2, yCenter - sideLength/2);
     println(millis());
+    t = new Thread(this);
   }
-  
   
     void update() {
     //set background and location
-    
+    if(strokes == STROKES) {
+      done = true;
+      move = false;
+      offscreen = false;
+      pressed = false;
+      strokes = 0;
+    }
     //loop for painting
     if(!done) {
       
@@ -256,30 +261,21 @@ class Canvas implements Runnable {
         c = color(red(c), green(c), blue(c), transparency);
         start = false;
       }
-      body.stroke(c);
-
+      
       //in case the brush was picked up
       if(pressed) {
-        strokes++;
+        body.stroke(c);
         lastXPos = xPos;
         lastYPos = yPos;
-        
         //get new location color
-        //c = picture.get((int)vals[0], (int)vals[1]);
-        
-        //c = get((int)xPos, (int)yPos);
         c = averageColor(xPos + offXColor, 
                          yPos + offYColor, 
                          xPos + offXColor + xRangeColor, 
                          yPos + offYColor + yRangeColor);
-        
-        //reset transparency
-        //transparency = 100;
         c = color(red(c), green(c), blue(c), transparency);
-        
+        body.stroke(c);
         //reset brush thickness
         brushRange = brushThickness;
-        
         //pick random points for each bristle
         for(bristle b: bristles) {
           float angle = random(0, 2*PI);
@@ -290,22 +286,16 @@ class Canvas implements Runnable {
         }
       }
       
-      
-      
       //if brush is dragging
       else {
         //update transparency
         c = color(red(c), green(c), blue(c), transparency);
         
-        targetc = get((int)xPos, (int)yPos);
-        if (colorDifference(c, targetc) > colorDifferenceThresh) {xVelocity *= -1; yVelocity *= -1;}
-        
-        
         //drag each bristle to new random location
         float dx = xPos - xpos;
         float dy = yPos - ypos;
         for(bristle b: bristles) {
-          b.drag(dx, dy, xpos, ypos);
+          b.drag(dx, dy, xpos, ypos, brushPressure);
         }
       }
       xpos = xPos;
@@ -313,61 +303,35 @@ class Canvas implements Runnable {
       //advaces the brush by dx and dy, or puts the brush at a new location
       advance();
     }
-    if(strokes == STROKES) {
-      done = true;
-      strokes = 0;
-    }
+
     //after painting is done and saved, reset to all white
     if(reset){
-      xpos = 0;
-      ypos = 0;
       reset = false;
       START = true;
-    }
-    
-    //communication with main window
-    if(restart) {
-      restart = false;
-      done = false;
     }
   }
 
   void advance() {
-
+    //called each frame for brush dragging or when
+    //it is moved
     if(move) {
-      
-      if (offscreen) {
-        if(offChance > randVal) {
-          xPos = random(WIDTH);
-          yPos = random(HEIGHT);
-        }
-        else {
-          deltaXPos *= -1;
-          deltaYPos *= -1;
-        }
-        offscreen = false;
-      }
-      else {
-        xPos = lastXPos;
-        yPos = lastYPos;
-   
-        xPos += deltaXPos;
-        yPos += deltaYPos;
+      xPos = random(0, WIDTH);//lastXPos + deltaXPos;
+      yPos = random(0, HEIGHT);//lastYPos + deltaYPos;
+      if (xPos < 0 || xPos > WIDTH || yPos < 0 || yPos > HEIGHT) {
+        xPos = random(WIDTH);
+        yPos = random(HEIGHT);
+          
       }
       if (changeAreaChance > randVal) {
         xPos = random(WIDTH);
         yPos = random(HEIGHT);
       }
       if (changeVariantChance > randVal) {
-        //genes[VARIANTS[int(randVal * 5)]] = random(-.5, .5);
         changeVariant(int(randVal * 5));
       }
       if(reverseVariantChance > randVal) {
-        //genes[VARIANTS[int(randVal * 5)]] *= -1;
         reverseVariant(int(randVal * 5));
       }
-      //deltaXPos += variationXPos;
-      //deltaYPos += variationYPos;
         
       xVelocity = origXVelocity;
       yVelocity = origYVelocity;
@@ -380,6 +344,7 @@ class Canvas implements Runnable {
       currentLength = 0;
       move = false;
       pressed = true;
+      offscreen = false;
     }
     else {
       if(reverseXChance > randVal) {
@@ -390,6 +355,21 @@ class Canvas implements Runnable {
       }
       xPos += xVelocity;
       yPos += yVelocity;
+      
+      if(detectEdge() && gas > randVal) {
+        float speed = sqrt(pow(xVelocity, 2) + (pow(yVelocity, 2)));
+        float eAngle = getEdgeAngle(edgePoint[0], edgePoint[1]);
+        float average = getAverageBetweenAngles(eAngle);
+        xVelocity = average < PI / 2 ? speed * cos(average) :
+                    average < PI ? -speed * cos(PI-average) :
+                    average < 3*PI/2 ? -speed * cos(average-PI) :
+                                      speed * cos(2*PI-average);
+        yVelocity = average < PI / 2 ? speed * sin(average) :
+                    average < PI ? speed * sin(PI-average) :
+                    average < 3*PI/2 ? -speed * sin(average-PI) :
+                                      -speed * sin(2*PI-average);
+        
+      }
       xVelocity += deltaXVelocity;
       yVelocity += deltaYVelocity;
       deltaXVelocity += variationXVelocity;
@@ -398,9 +378,15 @@ class Canvas implements Runnable {
       deltaBrushPressure += variationBrushPressure;
       currentLength += sqrt(pow(xPos - xpos, 2) + pow(yPos - ypos, 2));
       
-      if (currentLength >= brushLength) {
+      if (offscreen) {
         move = true;
         currentLength = 0;
+        strokes++;
+      }
+      else if (currentLength >= brushLength) {
+        move = true;
+        currentLength = 0;
+        strokes++;
       }
       if (xPos < 0 || xPos > WIDTH || yPos < 0 || yPos > HEIGHT)
         offscreen = true;
@@ -410,42 +396,53 @@ class Canvas implements Runnable {
   }
   
   float[] crossover(Canvas partner) {
+    //method for combining genes of two partners
     float[] newGenes = new float[GENECOUNT];
     for(int i = 0; i < GENECOUNT; i++) {
-      float choice = random(1);
-      if (choice < .5)
-        newGenes[i] = genes[i];
-      else
-        newGenes[i] = partner.genes[i];
+      if(random(1) < .01)
+        newGenes[i] = mutate(i);
+      else {
+        float choice = random(1);
+        if (choice < .5)
+          newGenes[i] = genes[i];
+        else
+          newGenes[i] = partner.genes[i];
+      }
+      
     }
     return newGenes;
   }
   
-  void mutate() {
-    if(true) {
-      float value;
-      int choice = int(random(GENECOUNT));
-      if(choice < 2) value = random(-3, 3);
-      else if(choice < 4) value = random(-1, 1);
-      else if(choice < 6) value = random(-.5, .5);
-      else if(choice == 6) value = random(1, 100);
-      else if(choice == 7) value = random(1, 20);
-      else if(choice < 11) value = 1;
-      else if(choice == 11) value = random(0, WIDTH);
-      else if(choice == 12) value = random(0, HEIGHT);
-      else if(choice < 15) value = random(-20, 20);
-      else if(choice < 17) value = random(-5, 5);
-      else if(choice < 23) value = random(1);
-      else if(choice < 25) value = random(-5, 5);
-      else if(choice < 27) value = random(1, 10);
-      else value = random(50, 100);
-      genes[choice] = value;
-    }
+  float mutate(int choice) {
+    //method for mutation chance, will change
+    //one gene at random
+    float value;
+    //int choice = int(random(GENECOUNT));
+    if(choice < 2) value = random(1, 5)*random(1)>.5?-1:1;
+    else if(choice < 4) value = random(-.01, .01);
+    else if(choice < 6) value = random(-.01, .01);
+    else if(choice == 6) value = random(5, 50);
+    else if(choice == 7) value = 2.0;
+    else if(choice < 11) value = random(1, 2);
+    else if(choice == 11) value = random(0, WIDTH);
+    else if(choice == 12) value = random(0, HEIGHT);
+    else if(choice < 15) value = random(-10, 10);
+    else if(choice < 17) value = random(-.5, .5);
+    else if(choice < 23) value = random(.05);
+    else if(choice < 25) value = random(-5, 5);
+    else if(choice < 27) value = random(1, 10);
+    else if(choice == 27) value = random(50, 400);
+    else if (choice < 31) value = random(1, 5);
+    else if (choice < 32) value = random(1, 20);
+    else if (choice < 33) value = random(1);
+    else value = random(-.5, .5);
+    return value;
   }
   
   void assignGenes() {
-    xVelocity = genes[0];
-    yVelocity = genes[1];
+    //assigns genes, called right after new generation is created
+    xVelocity = origXVelocity = genes[0];
+    yVelocity = origYVelocity = genes[1];
     deltaXVelocity = genes[2];
     deltaYVelocity = genes[3];
     variationXVelocity = genes[4];
@@ -472,9 +469,31 @@ class Canvas implements Runnable {
     xRangeColor = genes[25];
     yRangeColor = genes[26];
     colorDifferenceThresh = genes[27];
+    powerM = genes[28];
+    discR = genes[29];
+    numC = genes[30];
+    foresight = genes[31];
+    gas = genes[32];
+    angleWeight = genes[33];
+    makeEdgeMap();
   }
   
   void changeVariant(int index) {
+    //changes one variant at random
+    if(index == 0)
+      variationXVelocity = random(-.005, .005);
+    else if(index == 1)
+      variationYVelocity = random(-.005, .005);
+    else if(index == 2)
+      variationBrushPressure *= random(-.1, .1);
+    else if(index == 3)
+      variationYPos *= random(-1, 1);
+    else
+      variationXPos *= random(-1, 1);
+  }
+  
+  void reverseVariant(int index) {
+    //reverses one variant at random
     if(index == 0)
       variationXVelocity *= -1;
     else if(index == 1)
@@ -487,21 +506,8 @@ class Canvas implements Runnable {
       variationXPos *= -1;
   }
   
-  void reverseVariant(int index) {
-    float value = random(-1, 1);
-    if(index == 0)
-      variationXVelocity = value;
-    else if(index == 1)
-      variationYVelocity = value;
-    else if(index == 2)
-      variationBrushPressure = value;
-    else if(index == 3)
-      variationYPos = value;
-    else
-      variationXPos = value;
-  }
-  
   color averageColor(float startX, float startY, float endX, float endY) {
+    //returns the average rbg value of an area
     int totalRed = 0;
     int totalGreen = 0;
     int totalBlue = 0;
@@ -517,8 +523,79 @@ class Canvas implements Runnable {
   }
   
   int colorDifference(color c1, color c2) {
+    //returns difference in color of 2 colors
     return int(abs(red(c1) - red(c2)) + abs(green(c1) - green(c2)) + abs(blue(c1) - blue(c2)));
   }
+  
+  float getEdgeAngle(float x, float y) {
+    //returns the likely angle of an edge at point x, y
+    float totalBrightness = 0;
+    float best = 0;
+    float brightest = 0;
+    int checks = 50;
+    int shift = 10;
+    float theta = random(0, PI);
+    for(int i = 0; i < checks; i++) {
+      for(int j = -shift; j < shift; j++) {
+        totalBrightness += brightness(
+          edges.get((int)(x+j*cos(theta)), (int)(y+j*sin(theta))) 
+        );
+      }
+      if(totalBrightness>=brightest) {
+        best = theta;
+        brightest = totalBrightness;
+        
+      }
+      totalBrightness = 0;
+      theta = (theta + PI / checks) % PI;
+    }
+    return best;
+  }
+  
+  boolean detectEdge() {
+    //detects edge ahead of brush direction
+    float yDir = yVelocity / abs(yVelocity);
+    float xDir = xVelocity / abs(xVelocity);
+    for(int i = 0; i < foresight; i++) {
+      if(brightness(edges.get((int)(xPos+xDir*i), (int)(yPos+yDir*i))) > 200) {
+        edgePoint[0] = xPos+xDir*i;
+        edgePoint[1] = yPos+yDir*i;
+        return true;
+      }
+    }
+    return false;
+  }
+  
+  float getBrushAngle() {
+    //retruns brush angle ranging from 0 to 2PI
+    return yVelocity > 0 ? atan2(yVelocity, xVelocity)
+                         : atan2(yVelocity, xVelocity) + 2*PI;
+  }
+  
+  float getAverageBetweenAngles(float edAngle) {
+    //returns the average angle between brush angle and edge
+    float edAngle2 = edAngle + PI;
+    float bAngle = getBrushAngle();
+    float diff1 = abs(abs(bAngle - edAngle) - 2*PI) > abs(bAngle - edAngle) ?
+      abs(bAngle - edAngle) :
+      abs(abs(bAngle - edAngle) - 2*PI);
+    float diff2 = abs(abs(bAngle - edAngle2) - 2*PI) > abs(bAngle - edAngle2) ?
+      abs(bAngle - edAngle2) :
+      abs(abs(bAngle - edAngle2) - 2*PI);
+    float difference = diff1 > diff2 ? diff2 : diff1;
+    float edge = diff1 > diff2 ? edAngle2 : edAngle;
+    float average = (edge > 3*PI/2 && bAngle < PI/2) ||
+                      (edge < PI/2 && bAngle > 3*PI/2) ?
+                     abs((edge + bAngle) - (2*PI)) / 2 :
+                                   (edge + bAngle) / 2;
+    average += bAngle > edge ? !(edge<PI/2&&bAngle>3*PI/2||bAngle<PI&&edge>3*PI/2)? 
+           angleWeight*difference :
+          -angleWeight*difference : !(edge<PI/2&&bAngle>3*PI/2||bAngle<PI&&edge>3*PI/2)?
+          -angleWeight*difference :
+           angleWeight*difference;
+          
+    return average;
+  } 
   
   void saveImage(String name) {
     body.save(name);

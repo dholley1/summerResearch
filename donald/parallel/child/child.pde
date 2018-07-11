@@ -4,7 +4,7 @@ import java.io.*;
 int TOTALPOPULATION = 207;
 
 int COMPS = 9;
-int GENECOUNT = 28;
+int GENECOUNT = 33;
 int NUM = 1;
 
 boolean wait = false;
@@ -31,16 +31,17 @@ void setup() {
     allCanvases.add(new Canvas(100 + (i<5?201+201*i:(i<11?201*(i-5):(i<17?201*(i-11):201*(i-17)))), 
                                301 + (i<5?-201:(i<11?0:(i<17?201:402))), 200, color(255),
                                
-                               random(-3, 3), random(-3, 3), random(-1, 1), random(-1, 1),
-                               random(-.5, .5), random(-.5, .5), random(1, 100), random(1, 20),
+                               random(-5, 5), random(-5, 5), random(-.01, .01), random(-.01, .01),
+                               random(-.005, .005), random(-.005, .005), random(5, 50), 2.0,
                                
-                               1, 1, 1, //bp
+                               random(1, 2), random(1, 2), random(1, 2), //bp
                                
-                               random(0, WIDTH), random(0, HEIGHT), random(-20, 20),
-                               random(-20, 20), random(-.5, .5), random(-.5, .5),
-                               random(1), random(1), random(1), random(1), random(1), random(1),
+                               random(0, WIDTH), random(0, HEIGHT), random(-10, 10),
+                               random(-10, 10), random(-.5, .5), random(-.5, .5),
+                               random(.05), random(.05), random(.05), random(.05), random(.05), random(.05),
                                random(-5, 5), random(-5, 5), random(1, 10), random(1, 10),
-                               random(50, 400)));
+                               random(50, 400),
+                               random(1, 5), random(1, 5), random(1, 5), random(1, 20), random(1)));
   }
 }
 
