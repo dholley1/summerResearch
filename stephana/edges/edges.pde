@@ -2,7 +2,7 @@
 
 // Mess with these variables:
 
-String fileName = "frog.png";
+String fileName = "bb.png";
 
 float powerMod = 3;    // an exponent used in assigning whiteness to a pixel
 int discRad = 2;       // the radius of the disc neighborhood for each pixel
@@ -25,7 +25,7 @@ void setup() {
   // Put the original image on the left side of the window:
   originalImage = loadImage(fileName);
   
-  image(originalImage, 0, 0);
+  image(originalImage, 0, 0, 200, 200);
 
 }
 
@@ -85,8 +85,9 @@ int pixelCheck(int i, int j) {
     
     // Grab the LAB distance between those colors:
     float distance = findDist(color((int) c0_LAB[0], (int) c0_LAB[1], (int) c0_LAB[2]),
-                              color((int) c1_LAB[0], (int) c1_LAB[1], (int) c1_LAB[2])
-                             );
+                              color((int) c1_LAB[0], (int) c1_LAB[1], (int) c1_LAB[2]));
+                              
+    if (distance <= 10) distance = 0;
     
     // Keep track of the total of the pairwise distances:
     diffCounter += distance;
