@@ -1,16 +1,14 @@
 class bristle {
-  float xpos;
+  float xpos;  //x, y position
   float ypos;
-  float lowXFactor = -.1;
+  float lowXFactor = -.1;  //random offset limits
   float highXFactor = .1;
   float lowYFactor = -.1;
   float highYFactor = .1;
-  float thresh = 5;
+  float thresh = 1.4;  //speed threshold
   float shift = .1;
-  boolean smear;
-  color lastColor;
-  
-  boolean atMax = false;
+  boolean smear;  //whether bristle is adding color or smearing what's under it
+  color lastColor;  //color under bristle
   
   float div = 100;
   
@@ -24,14 +22,17 @@ class bristle {
   }
   
   void press(float x, float y) {
+    //put bristles on canvas
+    lastColor = body.get((int)x, (int)y);
     xpos = x;
     ypos = y;
     body.point(x, y);
   }
   
   void drag(float dx, float dy, float x, float y, float p) {
-    
+    // for when bristles are down and dragging
     float speed = sqrt(pow(dx, 2) + pow(dy, 2));
+    //if above threshold, get closer to center, else further away
     float xchange = speed < thresh ? (xpos - x) / div / (speed + 1) * p 
                                    : (x - xpos) / div * (speed + 1) / p;
     float ychange = speed < thresh ? (ypos - y) / div / (speed + 1) * p
@@ -42,9 +43,13 @@ class bristle {
       newx = xpos + dx;
       newy = ypos + dy;
     }
-    if(smear)
-      body.stroke(body.get((int)newx, (int)newy));
+    if(smear) {
+      //take color underneath brush
+      body.stroke(lastColor);
+      lastColor = body.get((int)newx, (int)newy);
+    }
     else {
+      //add new color
       float whiteOffset = dx + dy < 5 ?
             5 * (dx + dy) / 2 :
             dx + dy < 10 ?

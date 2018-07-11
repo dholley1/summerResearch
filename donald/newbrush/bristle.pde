@@ -19,6 +19,7 @@ class bristle {
   }
   
   void press(float x, float y) {
+    lastColor = get((int)x, (int)y);
     xpos = x;
     ypos = y;
     point(x, y);
@@ -37,8 +38,10 @@ class bristle {
       newx = xpos + dx;
       newy = ypos + dy;
     }
-    if(smear)
-      stroke(get((int)newx, (int)newy));
+    if(smear) {
+      stroke(lastColor);
+      lastColor = get((int)newx, (int)newy);
+    }
     else {
       float whiteOffset = newx - mouseX + newy - mouseY < 5 ?
             5 * (newx - mouseX + newy - mouseY) / 2 :
@@ -48,6 +51,7 @@ class bristle {
             5 * (-15 + newx - mouseX + newy - mouseY) / 2:
             5 * (-20 + newx - mouseX + newy - mouseY) / 2;
       stroke(red(c) + whiteOffset, green(c) + whiteOffset, blue(c) + whiteOffset);
+      
     }
     line(xpos, ypos, newx, newy);
     xpos = newx;

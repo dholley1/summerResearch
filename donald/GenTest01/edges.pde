@@ -20,7 +20,7 @@ PGraphics analyzeImage(PImage img) {
   /* Move through the originalImage pixel by pixel, assigning a probability
      to each of being on an edge. */
      
-  PGraphics edges = createGraphics(200, 200);
+  PGraphics edges = createGraphics(WIDTH, HEIGHT);
   
   // Iterate through all of the pixels in the image:
   edges.beginDraw();

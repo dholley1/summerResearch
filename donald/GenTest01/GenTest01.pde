@@ -1,43 +1,48 @@
 import java.io.*;
 import java.lang.*;
 import java.util.*;
-int GENECOUNT = 34;
-int NUM = 0;
-float[] SCORES;
+int GENECOUNT = 33;     //number of genes each canvas has
 
-int POPULATION = 10;
-int WIDTH = 200;
+int POPULATION = 10;    //number of canvases
+
+int WIDTH = 200;        //dimensions of screen
 int HEIGHT = 200;
-boolean START = false;
+
+boolean START = false;  //boolean for starting next generation of drawings
+
 ArrayList<Canvas> allCanvases = new ArrayList<Canvas>();
 PImage input;
 int PAINTING = 0;
 int GEN = 0;
 float[][] genes = new float[POPULATION][GENECOUNT];
+float[] SCORES = new float[POPULATION];
 
 void setup() {
   size(1005, 603);
   background(50);
   //target image
   input = loadImage("bb.jpg");
-  input.resize(200, 200);
-  image(input, 0, 0, 200, 200);
+  input.resize(WIDTH, HEIGHT);
+  image(input, 0, 0, WIDTH, HEIGHT);
   //first generation
   for(int i = 0; i < POPULATION; i++) {
     allCanvases.add(new Canvas(100 + (i < 5 ? 201 * i : 201 * (i - 5)), 
                                301 + (i < 5 ? 0 : 201), 200, color(255),
                                
-                               random(-1,1), random(-1, 1), random(-.01, .01), random(-.01, .01),
-                               random(-.01, .01), random(-.01, .01), random(5, 50), 2.0,
-                               
+                               //random genes
+                               random(1,5)*random(1)>.5?-1:1, //x, y velocities
+                               random(1,5)*random(1)>.5?-1:1,
+                               random(-.01, .01), random(-.01, .01), //dx, dy
+                               random(-.001, .001), random(-.001, .001), //ddx, ddy
+                               random(5, 50), 2.0, //bl, bs
                                random(1, 2), random(1, 2), random(1, 2), //bp
-                               
-                               random(0, WIDTH), random(0, HEIGHT), random(-10, 10),
-                               random(-10, 10), random(-.5, .5), random(-.5, .5),
-                               random(.05), random(.05), random(.05), random(.05), random(.05), random(.05),
+                               random(0, WIDTH), random(0, HEIGHT), //starting x, y
+                               random(-10, 10), random(-10, 10),
+                               random(-.5, .5), random(-.5, .5),
+                               random(.05), random(.05), random(.05), random(.05), random(.05), random(.05), //change genes
                                random(-5, 5), random(-5, 5), random(1, 10), random(1, 10),
-                               random(50, 400),
-                               random(1, 5), random(1, 5), random(1, 5), random(1, 20), random(1), random(-.5, .5)));
+                               random(1, 5), random(1, 5), random(1, 5), 
+                               random(1, 20), random(1), random(-.5, .5)));
   }
 }
 
@@ -55,7 +60,7 @@ void draw() {
   //in case of new paintings
   if(START) {
     for (Canvas c: allCanvases)
-      c.restart = true; 
+      c.restart = true;
     START = false;
   }
     //while painting are being done
@@ -93,8 +98,6 @@ void draw() {
         allCanvases.get(i).pressed = true;
       }
     }
-    
     //reset count each time
-    count = 0;
+    count = 0;}
   }
-}

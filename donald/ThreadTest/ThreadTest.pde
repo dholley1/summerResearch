@@ -1,14 +1,13 @@
 import java.io.*;
 import java.lang.*;
 import java.util.*;
-int GENECOUNT = 28;
-int NUM = 0;
-float[] SCORES;
+int GENECOUNT = 34;  //number of genes for each canvas
 
 boolean startThreads = true;
 
 
-int POPULATION = 100;
+int POPULATION = 10;
+float[] SCORES = new float[POPULATION];
 int WIDTH = 200;
 int HEIGHT = 200;
 boolean START = false;
@@ -18,60 +17,65 @@ static int PAINTING = 0;
 static int GEN = 0;
 float[][] genes = new float[POPULATION][GENECOUNT];
 
+int count = 0;
+
 void setup() {
   size(1005, 603);
   background(50);
   rectMode(CENTER);
   input = loadImage("frog.jpg");
+  input.resize(200, 200);
+  PGraphics standardEdge = analyzeImage(input);
+  standardEdge.save("bbEdge.png");
+  goodEdge = loadImage("bbEdge.png");
   image(input, 0, 0, 200, 200);
   for(int i = 0; i < POPULATION; i++) {
     allCanvases.add(new Canvas(100 + (i < 5 ? 201 * i : 201 * (i - 5)), 
                                301 + (i < 5 ? 0 : 201), 200, color(255),
                                
-                               random(-3, 3), random(-3, 3), random(-1, 1), random(-1, 1),
-                               random(-.5, .5), random(-.5, .5), random(1, 50), 10.0,
-                               
-                               1, 1, 1, //bp
-                               
-                               random(0, WIDTH), random(0, HEIGHT), random(-20, 20),
-                               random(-20, 20), random(-.5, .5), random(-.5, .5),
-                               random(1), random(1), random(1), random(1), random(1), random(1),
+                               random(1,5)*random(1)>.5?-1:1,
+                               random(1,5)*random(1)>.5?-1:1,
+                               random(-.01, .01), random(-.01, .01),
+                               random(-.01, .01), random(-.01, .01), 
+                               random(5, 50), 2.0, //bl, bs
+                               random(1, 2), random(1, 2), random(1, 2), //bp
+                               random(0, WIDTH), random(0, HEIGHT), //starting x, y
+                               random(-10, 10), random(-10, 10),
+                               random(-.5, .5), random(-.5, .5),
+                               random(.05), random(.05), random(.05), random(.05), random(.05), random(.05), //change genes
                                random(-5, 5), random(-5, 5), random(1, 10), random(1, 10),
-                               random(50, 400)));
+                               random(50, 400),
+                               random(1, 5), random(1, 5), random(1, 5), 
+                               random(1, 20), random(1), random(-.5, .5)));
   }
 }
 
 void draw() {
-  if (startThreads) for(Canvas c: allCanvases) {
+  if (startThreads) {
+    for(Canvas c: allCanvases) {
       c.t.start();
-      startThreads = false;
+    }
+    startThreads = false;
   }
   for(Canvas c: allCanvases) {
     if (c.done) {
+      count++;
       c.display();
       c.done = false;
     }
   }
-  /*
-  //to keep track of generations
+  
   GEN = PAINTING / POPULATION;
   
   //in case of new paintings
   if(START) {
     for (Canvas c: allCanvases)
-      c.restart = true; 
+      c.restart = true;
     START = false;
   }
     //while painting are being done
   else {
     //counter for if all paintings are finished
-    int count = 0;
-    for(Canvas c: allCanvases) {
-      if(c.done)
-        count+=1;
-      else
-        break;
-    }
     
     //if all painting are finished
     if(count == POPULATION) {
@@ -80,15 +84,16 @@ void draw() {
         c.saveImage("data/"+Integer.toString(PAINTING)+".png");
         PAINTING++;
       }
-      createGraph();
+      runTest();
       //loop for creating offspring
       for(int i = 0; i < POPULATION; i++) {
         allCanvases.get(i).reset = true;
-        int[] sel = selection();
+        int[] sel = lexicase();
         Canvas parent = allCanvases.get(sel[0]);
         Canvas partner = allCanvases.get(sel[1]);
         genes[i] = parent.crossover(partner);
       }
+      sblist.clear();
       
       //loop for assigning new genes
       for(int i = 0; i < POPULATION; i++) {
@@ -96,49 +101,51 @@ void draw() {
         allCanvases.get(i).assignGenes();
         allCanvases.get(i).pressed = true;
       }
+      count = 0;
+      startThreads = true;
+      writeData();
     }
-    
-    //reset count each time
-    count = 0;
-  }*/
+  }
 }
 
 
-void keyPressed() {
-  //save("../../../../../../Volumes/dholley/test.png");
-  try {
-    Formatter newFile = new Formatter(
-      "../../../../../../Volumes/dholley/summer/data/scores" + 
-      Integer.toString(NUM) + ".txt");
+void writeData() {
+  try {    
+    FileWriter fw = new FileWriter("SR/summerResearch/donald/ThreadTest/ALLSCORES.txt", true);
+    BufferedWriter bw = new BufferedWriter(fw);
+    PrintWriter out = new PrintWriter(bw);
+    out.println("GENERATION " + Integer.toString(GEN));
+    
+    
+    float[] orderedScores = new float[POPULATION];
+    int[] orderedNumbers = new int[POPULATION];
     for(int i = 0; i < POPULATION; i++) {
-      for(int j = 0; j < GENECOUNT; j++) {
-        newFile.format(Float.toString(genes[i][j]) + " ");
-        if(j % 5 == 4) newFile.format("\n");
+      orderedScores[i] = -1;
+      orderedNumbers[i] = -1;
+    }
+    
+    for(int i = 0; i < POPULATION; i++) {
+      float currentScore = SCORES[i];
+      int currentNumber = i;
+      for(int j = 0; j < POPULATION; j++) {
+        if (orderedScores[j] < currentScore) {
+          float switchScore = orderedScores[j];
+          int switchNumber = orderedNumbers[j];
+          orderedScores[j] = currentScore;
+          orderedNumbers[j] = currentNumber;
+          currentScore = switchScore;
+          currentNumber = switchNumber;
+        }
       }
-      
-      newFile.format("\n" + SCORES[i] + "\n\n");
-      
     }
-    newFile.close();
-  }
-  catch(Exception e){
-    System.out.println("no file");
-  }
-  try {
-    Scanner oldFile = new Scanner(new File(
-      "../../../../../../Volumes/dholley/summer/data/scores" + 
-      Integer.toString(NUM) + ".txt"));
-    while(oldFile.hasNext()) {
-      String a = oldFile.next();
-      println(a);
+    
+    for(int i = 0; i < POPULATION; i++) {
+      out.println(Integer.toString(orderedNumbers[i] + GEN*POPULATION) + ".png score" + " : " + Float.toString(orderedScores[i]));
     }
-    oldFile.close();
+    out.println();
+    out.close();
   }
-  catch(Exception e){
-    System.out.println("no file");
+  catch(Exception e) {
+    
   }
-  
-  
-  //for(Canvas c: allCanvases)
-    //c.done = true;
 }
