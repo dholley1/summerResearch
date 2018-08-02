@@ -48,9 +48,10 @@ canvas.pde :
   All of the random ranges in mutate are set to the same ranges as the genes
   when they are initialized.
   GetEdgeAngle, detectEdge, getBrushAngle, and getAverageBetweenAngles all have
-  to do with how the brush reacts to finding an edge.
-  
-  
+  to do with how the brush reacts to finding an edge.  The brush angle is always
+  between 0 and 2PI.  When the brush detects an edge, the brush changes its angle
+  to the average between it and the edge angle weighted in some direction based
+  on genes.
   
 PARENT AND CHILD IN PARALLEL :
   These programs were made so that a very big population could be run without
@@ -62,8 +63,6 @@ PARENT AND CHILD IN PARALLEL :
   It's necessary for every computer to have the same population, so set 
   POPULATION on each computer to some number, and then TOTALPOPULATION on each
   computer to that number * COMPS.
-  
-  
   
 RUNNING ON HPC :
   Log into grid.hpc.hamilton.edu account, cd testjob or to whichever directory

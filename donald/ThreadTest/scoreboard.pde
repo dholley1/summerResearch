@@ -55,6 +55,7 @@ class scoreboard {
   }
 
   void findMAD() {
+    //if (MADinOrder.size() == 0) return;
     if (MADinOrder.size() != 0 && MADinOrder.size() % 2 == 0) { // if even
       MAD = (MADinOrder.get((int)(MADinOrder.size()/2)) + MADinOrder.get(MADinOrder.size()/2-1)) / 2;
     }
@@ -98,7 +99,6 @@ class scoreboard {
   }
 }
 
-
 class tuple {
   int x;
   int y;
@@ -116,6 +116,7 @@ class tuple {
     return y;
   }
 }
+
 
 color getColor(PImage img, tuple pair) {
   // get the color of the pixel in tuple

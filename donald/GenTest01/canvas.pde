@@ -1,5 +1,5 @@
 int[] VARIANTS = {4, 5, 10, 15, 16};  //position of variant genes
-int STROKES = 2000;  //number of strokes until paintings stop
+int STROKES = 20;  //number of strokes until paintings stop
 int EDGE = 0;  //current edge detection image being saved
 
 class Canvas {

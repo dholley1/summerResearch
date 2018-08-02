@@ -24,6 +24,9 @@ void setup() {
   input = loadImage("bb.jpg");
   input.resize(WIDTH, HEIGHT);
   image(input, 0, 0, WIDTH, HEIGHT);
+  PGraphics standardEdge = analyzeImage(input);
+  standardEdge.save("bbEdge.png");
+  goodEdge = loadImage("bbEdge.png");
   //first generation
   for(int i = 0; i < POPULATION; i++) {
     allCanvases.add(new Canvas(100 + (i < 5 ? 201 * i : 201 * (i - 5)), 
@@ -81,15 +84,16 @@ void draw() {
         c.saveImage("data/"+Integer.toString(PAINTING)+".png");
         PAINTING++;
       }
-      createGraph();
+      runTest();
       //loop for creating offspring
       for(int i = 0; i < POPULATION; i++) {
         allCanvases.get(i).reset = true;
-        int[] sel = selection();
+        int[] sel = lexicase();
         Canvas parent = allCanvases.get(sel[0]);
         Canvas partner = allCanvases.get(sel[1]);
         genes[i] = parent.crossover(partner);
       }
+      sblist.clear();
       
       //loop for assigning new genes
       for(int i = 0; i < POPULATION; i++) {
